@@ -25,8 +25,13 @@
 #include "LoopClosing.h"
 #include "Tracking.h"
 #include "KeyFrameDatabase.h"
+<<<<<<< HEAD
 #include "Settings.h"
 
+=======
+#include "Initializer.h"
+#include "PointCloudMapping.h"
+>>>>>>> remotes/origin/dense_map
 #include <mutex>
 
 
@@ -37,6 +42,7 @@ class System;
 class Tracking;
 class LoopClosing;
 class Atlas;
+class PointCloudMapping;
 
 class LocalMapping
 {
@@ -47,7 +53,10 @@ public:
     void SetLoopCloser(LoopClosing* pLoopCloser);
 
     void SetTracker(Tracking* pTracker);
-
+    void SetPointCloudMapper(PointCloudMapping* pPointCloudMapping)
+    {
+        mpPointCloudMapping = pPointCloudMapping;
+    }
     // Main function
     void Run();
 
@@ -160,8 +169,9 @@ protected:
 
     LoopClosing* mpLoopCloser;
     Tracking* mpTracker;
+    PointCloudMapping* mpPointCloudMapping;
 
-    std::list<KeyFrame*> mlNewKeyFrames;
+    std::list<KeyFrame*> mlNewKeyFrames, mlNewKeyFrameForDenseMap;
 
     KeyFrame* mpCurrentKeyFrame;
 

@@ -38,8 +38,13 @@
 #include "ORBVocabulary.h"
 #include "Viewer.h"
 #include "ImuTypes.h"
+<<<<<<< HEAD
 #include "Settings.h"
 
+=======
+#include "Config.h"
+#include "PointCloudMapping.h"
+>>>>>>> remotes/origin/dense_map
 
 namespace ORB_SLAM3
 {
@@ -78,7 +83,11 @@ class Atlas;
 class Tracking;
 class LocalMapping;
 class LoopClosing;
+<<<<<<< HEAD
 class Settings;
+=======
+class PointCloudMapping;
+>>>>>>> remotes/origin/dense_map
 
 class System
 {
@@ -226,6 +235,8 @@ private:
 
     // The viewer draws the map and the current camera pose. It uses Pangolin.
     Viewer* mpViewer;
+
+    PointCloudMapping* mpPointCloudMapping;
 
     FrameDrawer* mpFrameDrawer;
     MapDrawer* mpMapDrawer;

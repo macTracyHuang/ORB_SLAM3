@@ -1550,6 +1550,10 @@ void LoopClosing::CorrectLoop()
 
     mpAtlas->InformNewBigChange();
 
+    mpPointCloudMapping->mabIsUpdating = false;  // 强制让已有的更新停止，进行新的
+    mpThreadDML = new thread(&PointCloudMapping::updatecloud, mpPointCloudMapping, std::ref(*mpCurrentKF->GetMap()));
+    mpThreadDML->detach();
+    cout << "Map updated!" << endl;
     // Add loop edge
     // Step 7：添加当前帧与闭环匹配帧之间的边（这个连接关系不优化）
     // 它在下一次的Essential Graph里面使用
@@ -1557,7 +1561,7 @@ void LoopClosing::CorrectLoop()
     mpCurrentKF->AddLoopEdge(mpLoopMatchedKF);
 
     // Launch a new thread to perform Global Bundle Adjustment (Only if few keyframes, if not it would take too much time)
-    // 闭环地图没有imu初始化或者 仅有一个地图且内部关键帧<200时才执行全局BA，否则太慢
+    // 闭环地图没有imu初始化或者 仅有一个地图且内部关键帧<200时才执行全局BA，否则太慢，想建图好点还是推荐执行一下的~
     if(!pLoopMap->isImuInitialized() || (pLoopMap->KeyFramesInMap()<200 && mpAtlas->CountMaps()==1))
     {
         // Step 9. 新建一个线程用于全局BA优化
@@ -1570,7 +1574,7 @@ void LoopClosing::CorrectLoop()
 
         mpThreadGBA = new thread(&LoopClosing::RunGlobalBundleAdjustment, this, pLoopMap, mpCurrentKF->mnId);
     }
-
+    
     // Loop closed. Release Local Mapping.
     mpLocalMapper->Release();    
 
@@ -2287,7 +2291,7 @@ void LoopClosing::MergeLocal()
         // 执行全局BA
         mpThreadGBA = new thread(&LoopClosing::RunGlobalBundleAdjustment,this, pMergeMap, mpCurrentKF->mnId);
     }
-
+    std::cout<<"merge local"<<std::endl;
     // 添加融合边(这里不是参与优化的边,只是记录)
     mpMergeMatchedKF->AddMergeEdge(mpCurrentKF);
     mpCurrentKF->AddMergeEdge(mpMergeMatchedKF);
@@ -3112,6 +3116,11 @@ void LoopClosing::RunGlobalBundleAdjustment(Map* pActiveMap, unsigned long nLoop
             vdFGBATotal_ms.push_back(timeFGBA);
 #endif
             Verbose::PrintMess("Map updated!", Verbose::VERBOSITY_NORMAL);
+ 
+            mpPointCloudMapping->mabIsUpdating = false;  // 强制让已有的更新停止，进行新的
+            mpThreadDML = new thread(&PointCloudMapping::updatecloud, mpPointCloudMapping, std::ref(*pActiveMap));
+            mpThreadDML->detach();
+            cout << "Map updated!" << endl;
         }
 
         mbFinishedGBA = true;

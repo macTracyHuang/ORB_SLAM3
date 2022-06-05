@@ -1612,8 +1612,9 @@ Sophus::SE3f Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat 
  */
 Sophus::SE3f Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const double &timestamp, string filename)
 {
+    mimLeft = imRGB.clone();
     mImGray = imRGB;
-    cv::Mat imDepth = imD;
+    mImDepth = imD.clone();
 
     // step 1：将RGB或RGBA图像转为灰度图像
     if(mImGray.channels()==3)
@@ -2039,7 +2040,6 @@ void Tracking::Track()
                 }
                 return;
             }
-
         }
     }
 
@@ -3128,6 +3128,11 @@ void Tracking::CreateMapInAtlas()
     mvIniMatches.clear();
     mlQueueImuData.clear();
 
+    if(mSensor==System::STEREO || mSensor==System::IMU_STEREO || mSensor==System::RGBD)
+    {
+        if (mpPointCloudMapping)
+            mpPointCloudMapping->Clear();
+    }
     mbCreatedMap = true;
 }
 
@@ -3962,6 +3967,15 @@ void Tracking::CreateNewKeyFrame()
 
     // Step 4：插入关键帧
     // 关键帧插入到列表 mlNewKeyFrames中，等待local mapping线程临幸
+    if(mSensor==System::STEREO || mSensor==System::IMU_STEREO || mSensor==System::RGBD)
+    {
+        // std::cout<<"mimLeft.empty()"<<mimLeft.empty()<<std::endl;
+        pKF->imLeftRgb = mimLeft.clone();
+        pKF->imRightRgb = mimRight.clone();
+        pKF->imDepth = mImDepth.clone();
+        // imshow("sss", pKF->imLeftRgb);
+        // cv::waitKey(1);
+    }
     mpLocalMapper->InsertKeyFrame(pKF);
 
     // 插入好了，允许局部建图停止

@@ -25,6 +25,11 @@
 #include "Atlas.h"
 #include "ORBVocabulary.h"
 #include "Tracking.h"
+<<<<<<< HEAD
+=======
+#include "Config.h"
+#include "PointCloudMapping.h"
+>>>>>>> remotes/origin/dense_map
 
 #include "KeyFrameDatabase.h"
 
@@ -40,7 +45,7 @@ class Tracking;
 class LocalMapping;
 class KeyFrameDatabase;
 class Map;
-
+class PointCloudMapping;
 
 class LoopClosing
 {
@@ -58,6 +63,10 @@ public:
 
     void SetLocalMapper(LocalMapping* pLocalMapper);
 
+    void SetPointCloudMapper(PointCloudMapping* pPointCloudMapping)
+    {
+        mpPointCloudMapping = pPointCloudMapping;
+    }
     // Main function
     void Run();
 
@@ -158,6 +167,8 @@ protected:
 
     Atlas* mpAtlas;
     Tracking* mpTracker;
+    PointCloudMapping* mpPointCloudMapping;
+    int loopcount = 0;
 
     KeyFrameDatabase* mpKeyFrameDB;
     ORBVocabulary* mpORBVocabulary;
@@ -218,6 +229,7 @@ protected:
     bool mbStopGBA;
     std::mutex mMutexGBA;
     std::thread* mpThreadGBA;
+    std::thread* mpThreadDML;
 
     // Fix scale in the stereo/RGB-D case
     bool mbFixScale;

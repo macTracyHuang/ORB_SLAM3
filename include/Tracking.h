@@ -94,6 +94,14 @@ public:
         return mpLastKeyFrame;
     }
 
+<<<<<<< HEAD
+=======
+    void SetPointCloudMapper(PointCloudMapping* pPointCloudMapping)
+    {
+        mpPointCloudMapping = pPointCloudMapping;
+    }
+
+>>>>>>> remotes/origin/dense_map
     void CreateMapInAtlas();
     //std::mutex mMutexTracks;
 
@@ -192,6 +200,14 @@ public:
     vector<double> vdTrackTotal_ms;
 #endif
 
+<<<<<<< HEAD
+=======
+    vector<int> vnKeyFramesLM;
+    vector<int> vnMapPointsLM;
+
+    cv::Mat mimLeft, mimRight;
+    cv::Mat mImDepth;
+>>>>>>> remotes/origin/dense_map
 protected:
 
     // Main tracking function. It is independent of the input sensor.
@@ -256,7 +272,11 @@ protected:
     //Other Thread Pointers
     LocalMapping* mpLocalMapper;
     LoopClosing* mpLoopClosing;
+<<<<<<< HEAD
 
+=======
+    PointCloudMapping* mpPointCloudMapping;
+>>>>>>> remotes/origin/dense_map
     //ORB
     ORBextractor* mpORBextractorLeft, *mpORBextractorRight;
     ORBextractor* mpIniORBextractor;
