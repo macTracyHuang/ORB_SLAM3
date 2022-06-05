@@ -25,11 +25,8 @@
 #include "Atlas.h"
 #include "ORBVocabulary.h"
 #include "Tracking.h"
-<<<<<<< HEAD
-=======
 #include "Config.h"
 #include "PointCloudMapping.h"
->>>>>>> remotes/origin/dense_map
 
 #include "KeyFrameDatabase.h"
 

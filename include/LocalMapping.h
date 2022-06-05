@@ -25,13 +25,10 @@
 #include "LoopClosing.h"
 #include "Tracking.h"
 #include "KeyFrameDatabase.h"
-<<<<<<< HEAD
 #include "Settings.h"
 
-=======
 #include "Initializer.h"
 #include "PointCloudMapping.h"
->>>>>>> remotes/origin/dense_map
 #include <mutex>
 
 

@@ -38,13 +38,10 @@
 #include "ORBVocabulary.h"
 #include "Viewer.h"
 #include "ImuTypes.h"
-<<<<<<< HEAD
 #include "Settings.h"
 
-=======
 #include "Config.h"
 #include "PointCloudMapping.h"
->>>>>>> remotes/origin/dense_map
 
 namespace ORB_SLAM3
 {
@@ -83,11 +80,8 @@ class Atlas;
 class Tracking;
 class LocalMapping;
 class LoopClosing;
-<<<<<<< HEAD
 class Settings;
-=======
 class PointCloudMapping;
->>>>>>> remotes/origin/dense_map
 
 class System
 {
