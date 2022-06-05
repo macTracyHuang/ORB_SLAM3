@@ -201,7 +201,7 @@ public:
     vector<int> vnMapPointsLM;
 
     cv::Mat mimLeft, mimRight;
-    cv::Mat mImDepth;
+    cv::Mat imDepth;
 protected:
 
     // Main tracking function. It is independent of the input sensor.

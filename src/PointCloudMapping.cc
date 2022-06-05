@@ -169,7 +169,8 @@ void PointCloudMapping::viewer()
 
             // gettimeofday(&start,NULL);
             pcl::PointCloud<pcl::PointXYZRGBA>::Ptr p(new pcl::PointCloud<pcl::PointXYZRGBA>);
-            pcl::transformPointCloud(*(pKF->mptrPointCloud), *(p), Converter::toMatrix4d(pKF->GetPoseInverse()));
+            // pcl::transformPointCloud(*(pKF->mptrPointCloud), *(p), Converter::toMatrix4d(pKF->GetPoseInverse()));
+            pcl::transformPointCloud(*(pKF->mptrPointCloud), *(p), pKF->GetPoseInverse().matrix());
 
             {
                 std::unique_lock<std::mutex> lck(mMutexGlobalMap);
@@ -229,9 +230,12 @@ void PointCloudMapping::updatecloud(Map &curMap)
         if (!currentvpKFs[i]->isBad() && currentvpKFs[i]->mptrPointCloud)
         {
             
+            // pcl::transformPointCloud(
+            //     *(currentvpKFs[i]->mptrPointCloud), *(curPointCloud),
+            //     Converter::toMatrix4d(currentvpKFs[i]->GetPoseInverse()));
             pcl::transformPointCloud(
                 *(currentvpKFs[i]->mptrPointCloud), *(curPointCloud),
-                Converter::toMatrix4d(currentvpKFs[i]->GetPoseInverse()));
+                currentvpKFs[i]->GetPoseInverse().matrix());
             *tmpGlobalMap += *curPointCloud;
 
             voxel->setInputCloud(tmpGlobalMap);

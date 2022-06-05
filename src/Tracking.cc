@@ -1614,7 +1614,7 @@ Sophus::SE3f Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, co
 {
     mimLeft = imRGB.clone();
     mImGray = imRGB;
-    mImDepth = imD.clone();
+    imDepth = imD.clone();
 
     // step 1：将RGB或RGBA图像转为灰度图像
     if(mImGray.channels()==3)
@@ -3972,7 +3972,7 @@ void Tracking::CreateNewKeyFrame()
         // std::cout<<"mimLeft.empty()"<<mimLeft.empty()<<std::endl;
         pKF->imLeftRgb = mimLeft.clone();
         pKF->imRightRgb = mimRight.clone();
-        pKF->imDepth = mImDepth.clone();
+        pKF->imDepth = imDepth.clone();
         // imshow("sss", pKF->imLeftRgb);
         // cv::waitKey(1);
     }
