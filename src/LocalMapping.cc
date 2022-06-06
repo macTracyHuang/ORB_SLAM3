@@ -1604,7 +1604,8 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
 
         if (have_imu_num < 6)
         {
-            cout << "imu初始化失败, 由于带有imu预积分信息的关键帧数量太少" << endl;
+            // cout << "imu初始化失败, 由于带有imu预积分信息的关键帧数量太少" << endl;
+            cout << "fail to initialize imu coz not enough pkf with Preintegrated information " << endl;
             bInitializing=false;
             mbBadImu = true;
             return;

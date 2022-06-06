@@ -58,7 +58,7 @@ void PointCloudMapping::shutdown()
 
 void PointCloudMapping::Clear()
 {
-    std::cout << "清除稠密地图" << std::endl;
+    std::cout << "clear dense map" << std::endl;
     std::unique_lock<std::mutex> lck(mMutexGlobalMap);
     globalMap.reset(new pcl::PointCloud<pcl::PointXYZRGBA>);
 }
@@ -216,7 +216,7 @@ void PointCloudMapping::updatecloud(Map &curMap)
     mabIsUpdating = true;
     currentvpKFs = curMap.GetAllKeyFrames();
     // loopbusy = true;
-    cout << "开始点云更新" << endl;
+    cout << "start update pointcloud" << endl;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr tmpGlobalMap(new pcl::PointCloud<pcl::PointXYZRGBA>);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr curPointCloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr tmpGlobalMapFilter(new pcl::PointCloud<pcl::PointXYZRGBA>());
@@ -224,7 +224,7 @@ void PointCloudMapping::updatecloud(Map &curMap)
     {
         if (!mabIsUpdating)
         {
-            std::cout << "中断点云更新" <<std::endl;
+            std::cout << "break update pointcloud" <<std::endl;
             return;
         }
         if (!currentvpKFs[i]->isBad() && currentvpKFs[i]->mptrPointCloud)
@@ -243,7 +243,7 @@ void PointCloudMapping::updatecloud(Map &curMap)
             tmpGlobalMap->swap(*tmpGlobalMapFilter);
         }
     }
-    cout << "点云更新完成" << endl;
+    cout << "complete update pointcloud" << endl;
     {
         std::unique_lock<std::mutex> lck(mMutexGlobalMap);
         globalMap = tmpGlobalMap;
