@@ -2040,6 +2040,7 @@ void Tracking::Track()
                 }
                 return;
             }
+
         }
     }
 
@@ -3043,6 +3044,15 @@ void Tracking::CreateInitialMapMonocular()
     }
 
     // Step 8 将关键帧插入局部地图，更新归一化后的位姿、局部地图点
+    if(mSensor==System::STEREO || mSensor==System::IMU_STEREO || mSensor==System::RGBD)
+    {
+        if (mpPointCloudMapping){
+            pKFcur->imLeftRgb = mimLeft.clone();
+            pKFcur->imRightRgb = mimRight.clone();
+            pKFcur->imDepth = imDepth.clone();
+        }
+    }
+
     mpLocalMapper->InsertKeyFrame(pKFini);
     mpLocalMapper->InsertKeyFrame(pKFcur);
     mpLocalMapper->mFirstTs=pKFcur->mTimeStamp;
@@ -3969,12 +3979,15 @@ void Tracking::CreateNewKeyFrame()
     // 关键帧插入到列表 mlNewKeyFrames中，等待local mapping线程临幸
     if(mSensor==System::STEREO || mSensor==System::IMU_STEREO || mSensor==System::RGBD)
     {
-        // std::cout<<"mimLeft.empty()"<<mimLeft.empty()<<std::endl;
-        pKF->imLeftRgb = mimLeft.clone();
-        pKF->imRightRgb = mimRight.clone();
-        pKF->imDepth = imDepth.clone();
-        // imshow("sss", pKF->imLeftRgb);
-        // cv::waitKey(1);
+        if (mpPointCloudMapping){
+            // std::cout<<"mimLeft.empty()"<<mimLeft.empty()<<std::endl;
+            pKF->imLeftRgb = mimLeft.clone();
+            pKF->imRightRgb = mimRight.clone();
+            pKF->imDepth = imDepth.clone();
+            // imshow("sss", pKF->imLeftRgb);
+            // cv::waitKey(1);
+        }
+
     }
     mpLocalMapper->InsertKeyFrame(pKF);
 

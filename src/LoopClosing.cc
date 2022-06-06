@@ -179,8 +179,8 @@ void LoopClosing::Run()
                             // If inertial, force only yaw
                             // 如果是imu模式并且完成了初始化,强制将焊接变换的 roll 和 pitch 设为0
                             // 通过物理约束来保证两个坐标轴都是水平的
-                            if ((mpTracker->mSensor==System::IMU_MONOCULAR ||mpTracker->mSensor==System::IMU_STEREO) &&
-                                   mpCurrentKF->GetMap()->GetIniertialBA1()) // TODO, maybe with GetIniertialBA1
+                            if ((mpTracker->mSensor==System::IMU_MONOCULAR || mpTracker->mSensor==System::IMU_STEREO || mpTracker->mSensor==System::IMU_RGBD) &&
+                                   mpCurrentKF->GetMap()->GetIniertialBA1())
                             {
                                 Eigen::Vector3d phi = LogSO3(mSold_new.rotation().toRotationMatrix());
                                 phi(0)=0;
@@ -693,8 +693,7 @@ bool LoopClosing::DetectAndReffineSim3FromLastKF(KeyFrame* pCurrentKF, KeyFrame*
         if(numOptMatches > nProjOptMatches)
         {
             //!bug, 以下gScw_estimation应该通过上述sim3优化后的位姿来更新。以下mScw应该改为 gscm * gswm^-1
-            g2o::Sim3 gScw_estimation(Converter::toMatrix3d(mScw.rowRange(0, 3).colRange(0, 3)),
-                           Converter::toVector3d(mScw.rowRange(0, 3).col(3)),1.0);
+            g2o::Sim3 gScw_estimation(gScw.rotation(), gScw.translation(),1.0);
 
             vector<MapPoint*> vpMatchedMP;
             vpMatchedMP.resize(mpCurrentKF->GetMapPointMatches().size(), static_cast<MapPoint*>(NULL));
@@ -1551,10 +1550,10 @@ void LoopClosing::CorrectLoop()
     mpAtlas->InformNewBigChange();
 
     if (mpPointCloudMapping){
-        mpPointCloudMapping->mabIsUpdating = false;  // 强制让已有的更新停止，进行新的
-        mpThreadDML = new thread(&PointCloudMapping::updatecloud, mpPointCloudMapping, std::ref(*mpCurrentKF->GetMap()));
-        mpThreadDML->detach();
-        cout << "Map updated!" << endl;
+            mpPointCloudMapping->mabIsUpdating = false;  // 强制让已有的更新停止，进行新的
+            mpThreadDML = new thread(&PointCloudMapping::updatecloud, mpPointCloudMapping, std::ref(*mpCurrentKF->GetMap()));
+            mpThreadDML->detach();
+            cout << "Map updated!" << endl;
     }
 
     // Add loop edge
@@ -1564,7 +1563,7 @@ void LoopClosing::CorrectLoop()
     mpCurrentKF->AddLoopEdge(mpLoopMatchedKF);
 
     // Launch a new thread to perform Global Bundle Adjustment (Only if few keyframes, if not it would take too much time)
-    // 闭环地图没有imu初始化或者 仅有一个地图且内部关键帧<200时才执行全局BA，否则太慢，想建图好点还是推荐执行一下的~
+    // 闭环地图没有imu初始化或者 仅有一个地图且内部关键帧<200时才执行全局BA，否则太慢
     if(!pLoopMap->isImuInitialized() || (pLoopMap->KeyFramesInMap()<200 && mpAtlas->CountMaps()==1))
     {
         // Step 9. 新建一个线程用于全局BA优化
@@ -1577,7 +1576,7 @@ void LoopClosing::CorrectLoop()
 
         mpThreadGBA = new thread(&LoopClosing::RunGlobalBundleAdjustment, this, pLoopMap, mpCurrentKF->mnId);
     }
-    
+
     // Loop closed. Release Local Mapping.
     mpLocalMapper->Release();    
 
@@ -2279,14 +2278,13 @@ void LoopClosing::MergeLocal()
     vdMergeOptEss_ms.push_back(timeOptEss);
 #endif
 
+
     if (mpPointCloudMapping){
         mpPointCloudMapping->mabIsUpdating = false;  // 强制让已有的更新停止，进行新的
-        mpThreadDML = new thread(&PointCloudMapping::updatecloud, mpPointCloudMapping, std::ref(*pMergeMap));
+        mpThreadDML = new thread(&PointCloudMapping::updatecloud, mpPointCloudMapping, std::ref(*mpCurrentKF->GetMap()));
         mpThreadDML->detach();
         cout << "Map updated!" << endl;
     }
-
-
     // Essential graph 优化后可以重新开始局部建图了
     mpLocalMapper->Release();
 
@@ -2302,7 +2300,7 @@ void LoopClosing::MergeLocal()
         // 执行全局BA
         mpThreadGBA = new thread(&LoopClosing::RunGlobalBundleAdjustment,this, pMergeMap, mpCurrentKF->mnId);
     }
-    std::cout<<"merge local"<<std::endl;
+
     // 添加融合边(这里不是参与优化的边,只是记录)
     mpMergeMatchedKF->AddMergeEdge(mpCurrentKF);
     mpCurrentKF->AddMergeEdge(mpMergeMatchedKF);
@@ -3116,12 +3114,6 @@ void LoopClosing::RunGlobalBundleAdjustment(Map* pActiveMap, unsigned long nLoop
             // mpTracker->UpdateFrameIMU(1.0f, mpTracker->GetLastKeyFrame()->GetImuBias(), mpTracker->GetLastKeyFrame());
 
             mpLocalMapper->Release();
-            if (mpPointCloudMapping){
-                mpPointCloudMapping->mabIsUpdating = false;  // 强制让已有的更新停止，进行新的
-                mpThreadDML = new thread(&PointCloudMapping::updatecloud, mpPointCloudMapping, std::ref(*pActiveMap));
-                mpThreadDML->detach();
-                cout << "Map updated!" << endl;
-            }
 
 #ifdef REGISTER_TIMES
             std::chrono::steady_clock::time_point time_EndUpdateMap = std::chrono::steady_clock::now();
@@ -3133,8 +3125,14 @@ void LoopClosing::RunGlobalBundleAdjustment(Map* pActiveMap, unsigned long nLoop
             vdFGBATotal_ms.push_back(timeFGBA);
 #endif
             Verbose::PrintMess("Map updated!", Verbose::VERBOSITY_NORMAL);
-
+            if (mpPointCloudMapping){
+                mpPointCloudMapping->mabIsUpdating = false;  // 强制让已有的更新停止，进行新的
+                mpThreadDML = new thread(&PointCloudMapping::updatecloud, mpPointCloudMapping, std::ref(*mpCurrentKF->GetMap()));
+                mpThreadDML->detach();
+                cout << "Map updated!" << endl;
+            }
         }
+
         mbFinishedGBA = true;
         mbRunningGBA = false;
     }
