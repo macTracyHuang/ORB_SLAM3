@@ -195,7 +195,7 @@ void PointCloudMapping::viewer()
         // std::cout<<"generatePointCloudTime: "<<generatePointCloudTime<<std::endl;
         // std::cout<<"transformPointCloudTime: "<<transformPointCloudTime<<std::endl;
         // gettimeofday(&start,NULL);
-        viewer.showCloud(globalMap);  // 这个比较费时，建议不需要实时显示的可以屏蔽或改成几次显示一次
+        // viewer.showCloud(globalMap);  // 这个比较费时，建议不需要实时显示的可以屏蔽或改成几次显示一次
         // gettimeofday(&finish,NULL);//初始化结束时间
         // double duration = finish.tv_sec - start.tv_sec + (finish.tv_usec - start.tv_usec)/1000000.0;//转换浮点型
         // std::cout<<"showCloud: "<<duration<<std::endl;

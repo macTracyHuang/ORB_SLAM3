@@ -1635,4 +1635,9 @@ string System::CalculateCheckSum(string filename, int type)
     return checksum;
 }
 
+// Save pointcloudmapping pcd file
+void System::SavePointcloudMap(){
+    mpPointCloudMapping->save();
+}
+
 } //namespace ORB_SLAM

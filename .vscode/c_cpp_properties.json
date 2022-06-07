@@ -6,7 +6,8 @@
                 "${workspaceFolder}/**",
                 "/usr/include/pcl-1.8",
                 "/usr/include/eigen3",
-                "/usr/include/vtk-6.3"
+                "/usr/include/vtk-6.3",
+                "/opt/ros/melodic/include/*"
             ],
             "defines": [
                 "_DEBUG",
@@ -16,7 +17,7 @@
             "windowsSdkVersion": "10.0.18362.0",
             "compilerPath": "/usr/bin/g++",
             "cStandard": "c11",
-            "cppStandard": "c++17",
+            "cppStandard": "c++14",
             "intelliSenseMode": "msvc-x64"
         }
     ],
