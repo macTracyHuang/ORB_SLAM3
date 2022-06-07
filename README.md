@@ -1,10 +1,4 @@
-# ORB-SLAM3 超详细注释
 
--by 计算机视觉life 公众号旗下开源学习小组：SLAM研习社
-
-[ORB-SLAM3 逐行源码讲解](https://cvlife.net/detail/term_6255372036a53_o5VfgR/25)
-
-----
 # ORB-SLAM3
 
 ### V1.0, December 22th, 2021
@@ -240,10 +234,3 @@ A flag in `include\Config.h` activates time measurements. It is necessary to unc
 
 # 9. Calibration
 You can find a tutorial for visual-inertial calibration and a detailed description of the contents of valid configuration files at  `Calibration_Tutorial.pdf`
-# 稠密重建版本 不定时更新
-首先推荐自己编译安装pcl，我自己电脑的pcl1.8是apt安装的，不好用，回报错，自行编译1.12后解决
-## 2021年11月24日
-1. 添加rgbd稠密重建
-2. 增加稠密回环（多地图已经有啦）
-## 下个版本
-增加双目版本
