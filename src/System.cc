@@ -216,6 +216,9 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
                              mpAtlas, mpKeyFrameDatabase, strSettingsFile, mSensor, settings_, strSequence);
 
+    // turn on Localization mode if Load Map
+    if (!mStrLoadAtlasFromFile.empty())
+        mpTracker->mbOnlyTracking = true;
     //Initialize the Local Mapping thread and launch
     //创建并开启local mapping线程
     mpLocalMapper = new LocalMapping(this, mpAtlas, mSensor==MONOCULAR || mSensor==IMU_MONOCULAR,
@@ -617,7 +620,7 @@ void System::Shutdown()
 
     if(!mStrSaveAtlasToFile.empty())
     {
-        std::cout << "开始保存地图" << std::endl;
+        std::cout << "start to save Atlas Map as " << mStrSaveAtlasToFile << std::endl;
         Verbose::PrintMess("Atlas saving to file " + mStrSaveAtlasToFile, Verbose::VERBOSITY_NORMAL);
         SaveAtlas(FileType::BINARY_FILE);
     }
@@ -1637,7 +1640,10 @@ string System::CalculateCheckSum(string filename, int type)
 
 // Save pointcloudmapping pcd file
 void System::SavePointcloudMap(){
-    mpPointCloudMapping->save();
+    if (mStrSaveAtlasToFile.empty())
+        cout << "Disable Save pointcloud map under localization mode" << endl;
+    else
+        mpPointCloudMapping->save();
 }
 
 } //namespace ORB_SLAM

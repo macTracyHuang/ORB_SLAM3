@@ -43,6 +43,7 @@ PointCloudMapping::PointCloudMapping(double resolution_, double meank_, double t
     voxel->setLeafSize(resolution, resolution, resolution);
     globalMap = pcl::PointCloud<pcl::PointXYZRGBA>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
+
     viewerThread = make_shared<thread>(bind(&PointCloudMapping::viewer, this));
 }
 
@@ -53,6 +54,8 @@ void PointCloudMapping::shutdown()
         shutDownFlag = true;
         keyFrameUpdated.notify_one();
     }
+
+
     viewerThread->join();
 }
 
@@ -122,7 +125,7 @@ void PointCloudMapping::generatePointCloud(KeyFrame *kf) //,Eigen::Isometry3d T
 
 void PointCloudMapping::viewer()
 {
-    pcl::visualization::CloudViewer viewer("viewer");
+    // pcl::visualization::CloudViewer viewer("viewer");
     // KeyFrame * pCurKF;
     while (1)
     {
@@ -180,7 +183,7 @@ void PointCloudMapping::viewer()
             // transformPointCloudTime += finish.tv_sec - start.tv_sec + (finish.tv_usec - start.tv_usec)/1000000.0;
         }
         // gettimeofday(&start,NULL);
-        pcl::PointCloud<pcl::PointXYZRGBA>::Ptr tmp(new pcl::PointCloud<pcl::PointXYZRGBA>);
+        // pcl::PointCloud<pcl::PointXYZRGBA>::Ptr tmp(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
         // 去除孤立点这个比较耗时，用处也不是很大，可以去掉
         // statistical_filter->setInputCloud(globalMap);  

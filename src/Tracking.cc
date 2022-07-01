@@ -2268,7 +2268,9 @@ void Tracking::Track()
         {
             // Localization Mode: Local Mapping is deactivated (TODO Not available in inertial mode)
             // 只进行跟踪tracking，局部地图不工作
-            if(mState==LOST)
+            // if(mState == LOST)
+
+            if(mState==RECENTLY_LOST && !bOK && mCurrentFrame.mTimeStamp-mTimeStampLost>3.0f)
             {
                 if(mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD)
                     Verbose::PrintMess("IMU. State LOST", Verbose::VERBOSITY_NORMAL);
@@ -2330,6 +2332,7 @@ void Tracking::Track()
                     // Step 6.5 根据前面的恒速模型、重定位结果来更新状态
                     if(bOKMM && !bOKReloc)
                     {
+                        // std::cout << "bokRloc not ok" <<'\n';
                         // 恒速模型成功、重定位失败，重新使用之前暂存的恒速模型结果
                         mCurrentFrame.SetPose(TcwMM);
                         mCurrentFrame.mvpMapPoints = vpMPsMM;
@@ -2392,7 +2395,7 @@ void Tracking::Track()
                 bOK = TrackLocalMap();
             }
             if(!bOK)
-                cout << "Fail to track local map!" << endl;
+                std::cout << "Fail to track local map!" << endl;
         }
         else
         {
