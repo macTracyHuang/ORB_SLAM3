@@ -94,6 +94,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         // 保存及加载地图的名字
         mStrLoadAtlasFromFile = settings_->atlasLoadFile();
         mStrSaveAtlasToFile = settings_->atlasSaveFile();
+        mIntSavePointCloud = settings_->savePointCloud();
 
         cout << (*settings_) << endl;
     }
@@ -155,6 +156,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     }
     else
     {
+        // tracy- turn on Localization mode if Load Map
+        mbActivateLocalizationMode = true;
         //Load ORB Vocabulary
         cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
@@ -190,7 +193,9 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
         loadedAtlas = true;
 
-        mpAtlas->CreateNewMap();
+        // mpAtlas->CreateNewMap();
+        vector<Map*> map_vector = mpAtlas->GetAllMaps();
+        mpAtlas->ChangeMap(map_vector.at(0));
 
         //clock_t timeElapsed = clock() - start;
         //unsigned msElapsed = timeElapsed / (CLOCKS_PER_SEC / 1000);
@@ -216,9 +221,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
                              mpAtlas, mpKeyFrameDatabase, strSettingsFile, mSensor, settings_, strSequence);
 
-    // turn on Localization mode if Load Map
-    if (!mStrLoadAtlasFromFile.empty())
-        mpTracker->mbOnlyTracking = true;
+
+
     //Initialize the Local Mapping thread and launch
     //创建并开启local mapping线程
     mpLocalMapper = new LocalMapping(this, mpAtlas, mSensor==MONOCULAR || mSensor==IMU_MONOCULAR,
@@ -1591,7 +1595,15 @@ bool System::LoadAtlas(int type)
         mpAtlas->SetKeyFrameDababase(mpKeyFrameDatabase);
         mpAtlas->SetORBVocabulary(mpVocabulary);
         mpAtlas->PostLoad();
-
+        // tracy -  get map information to check if it loads well
+        cout << "get map information to check if it loads well"<<endl;
+        // Map* curMp = mpAtlas->GetCurrentMap();
+        // if (curMp)
+        //     cout << "Current map id: " << curMp->GetId() <<endl;
+        // else
+        //     cout << "No active map is loaded"<<endl;
+        cout << "end checking" <<endl;
+        //end tracy   
         return true;
     }
     return false;
@@ -1640,10 +1652,11 @@ string System::CalculateCheckSum(string filename, int type)
 
 // Save pointcloudmapping pcd file
 void System::SavePointcloudMap(){
-    if (mStrSaveAtlasToFile.empty())
-        cout << "Disable Save pointcloud map under localization mode" << endl;
-    else
+    
+    if (mIntSavePointCloud)
         mpPointCloudMapping->save();
+    else
+        cout << "Disable Save pointcloud map under localization mode" << endl;
 }
 
 } //namespace ORB_SLAM

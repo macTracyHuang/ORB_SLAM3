@@ -114,6 +114,8 @@ namespace ORB_SLAM3 {
 
         std::string atlasLoadFile() {return sLoadFrom_;}
         std::string atlasSaveFile() {return sSaveto_;}
+        int savePointCloud() {return sSaveplc_;}
+        
 
         float thFarPoints() {return thFarPoints_;}
 
@@ -222,6 +224,7 @@ namespace ORB_SLAM3 {
          * Save & load maps
          */
         std::string sLoadFrom_, sSaveto_;
+        int sSaveplc_ = 0;
 
         /*
          * Other stuff

@@ -1,4 +1,4 @@
-/**
+/**viewer
 * This file is part of ORB-SLAM3
 *
 * Copyright (C) 2017-2021 Carlos Campos, Richard Elvira, Juan J. Gómez Rodríguez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
@@ -66,9 +66,9 @@ int main(int argc, char **argv)
     vector<float> vTimesTrack;
     vTimesTrack.resize(nImages);
 
-    cout << endl << "-------" << endl;
-    cout << "Start processing sequence ..." << endl;
-    cout << "Images in the sequence: " << nImages << endl << endl;
+    std::cout << endl << "-------" << endl;
+    std::cout << "Start processing sequence ..." << endl;
+    std::cout << "Images in the sequence: " << nImages << endl << endl;
 
     // Main loop
     cv::Mat imRGB, imD;
@@ -119,20 +119,74 @@ int main(int argc, char **argv)
             usleep((T-ttrack)*1e6);
     }
 
+    // // tracy - second run with loc mode
+    // std::cout << "second run with loc mode"<<endl;
+    // SLAM.ActivateLocalizationMode();
+    // sleep(10);
+    // for(int ni=0; ni<nImages; ni++)
+    // {
+    //     // Read image and depthmap from file
+    //     imRGB = cv::imread(string(argv[3])+"/"+vstrImageFilenamesRGB[ni],cv::IMREAD_UNCHANGED); //,cv::IMREAD_UNCHANGED);
+    //     imD = cv::imread(string(argv[3])+"/"+vstrImageFilenamesD[ni],cv::IMREAD_UNCHANGED); //,cv::IMREAD_UNCHANGED);
+    //     double tframe = vTimestamps[ni] + 1000;
+
+    //     if(imRGB.empty())
+    //     {
+    //         cerr << endl << "Failed to load image at: "
+    //              << string(argv[3]) << "/" << vstrImageFilenamesRGB[ni] << endl;
+    //         return 1;
+    //     }
+
+    //     if(imageScale != 1.f)
+    //     {
+    //         int width = imRGB.cols * imageScale;
+    //         int height = imRGB.rows * imageScale;
+    //         cv::resize(imRGB, imRGB, cv::Size(width, height));
+    //         cv::resize(imD, imD, cv::Size(width, height));
+    //     }
+
+
+    //     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+
+
+    //     // Pass the image to the SLAM system
+        
+    //     SLAM.TrackRGBD(imRGB,imD,tframe);
+
+    //     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
+
+
+    //     double ttrack= std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
+
+    //     vTimesTrack[ni]=ttrack;
+
+    //     // Wait to load the next frame
+    //     double T=0;
+    //     if(ni<nImages-1)
+    //         T = vTimestamps[ni+1]-tframe;
+    //     else if(ni>0)
+    //         T = tframe-vTimestamps[ni-1];
+
+    //     if(ttrack<T)
+    //         usleep((T-ttrack)*1e6);
+    // }
+
+    // //tracy - end second run
+
     sleep(10);
     // Stop all threads
     SLAM.Shutdown();
 
     // Tracking time statistics
-    sort(vTimesTrack.begin(),vTimesTrack.end());
+    std::sort(vTimesTrack.begin(),vTimesTrack.end());
     float totaltime = 0;
     for(int ni=0; ni<nImages; ni++)
     {
         totaltime+=vTimesTrack[ni];
     }
-    cout << "-------" << endl << endl;
-    cout << "median tracking time: " << vTimesTrack[nImages/2] << endl;
-    cout << "mean tracking time: " << totaltime/nImages << endl;
+    std::cout << "-------" << endl << endl;
+    std::cout << "median tracking time: " << vTimesTrack[nImages/2] << endl;
+    std::cout << "mean tracking time: " << totaltime/nImages << endl;
 
     // Save camera trajectory
     SLAM.SaveTrajectoryTUM("CameraTrajectory.txt");

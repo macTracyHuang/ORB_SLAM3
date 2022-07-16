@@ -62,6 +62,7 @@ Atlas::~Atlas()
 void Atlas::CreateNewMap()
 {
     // 锁住地图集
+    cout<< "start to create new map"<<endl;
     unique_lock<mutex> lock(mMutexAtlas);
     cout << "Creation of new map with id: " << Map::nNextId << endl;
     // 如果当前活跃地图有效，先存储当前地图为不活跃地图后退出
@@ -266,11 +267,19 @@ void Atlas::clearAtlas()
 
 Map *Atlas::GetCurrentMap()
 {
+    
     unique_lock<mutex> lock(mMutexAtlas);
     if (!mpCurrentMap)
+    {
+        cout << "no current map" <<endl;
         CreateNewMap();
+    }
+        
     while (mpCurrentMap->IsBad())
+    {
+        cout << mpCurrentMap->GetId() <<"is bad map"<<endl;
         usleep(3000);
+    }
 
     return mpCurrentMap;
 }
@@ -358,6 +367,7 @@ void Atlas::PreSave()
             continue;
         }
         pMi->PreSave(spCams);
+        cout << "save map: " << pMi->GetId() <<"kfinmap: "<< pMi->KeyFramesInMap() << " mpinmap: " << pMi->MapPointsInMap()<< endl;
     }
 
     // 4. 删除坏地图
@@ -383,6 +393,7 @@ void Atlas::PostLoad()
     {
         mspMaps.insert(pMi);
         pMi->PostLoad(mpKeyFrameDB, mpORBVocabulary, mpCams);
+        cout << "load map: " << pMi->GetId() <<"kfinmap: "<< pMi->KeyFramesInMap() << " mpinmap: " << pMi->MapPointsInMap()<< endl;
         numKF += pMi->GetAllKeyFrames().size();
         numMP += pMi->GetAllMapPoints().size();
     }

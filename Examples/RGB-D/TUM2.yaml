@@ -12,6 +12,8 @@ System.LoadAtlasFromFile: "RGBD_fr2_loop.bin"
 # The store file is created from the current session, if a file with the same name exists it is deleted
 # System.SaveAtlasToFile: "RGBD_fr2_loop.bin" 
 
+# Save point cloud: 0:false, 1:true
+# System.SavePointCloud: 0;
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!
 #--------------------------------------------------------------------------------------------

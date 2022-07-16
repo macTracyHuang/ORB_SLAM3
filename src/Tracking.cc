@@ -2269,8 +2269,8 @@ void Tracking::Track()
             // Localization Mode: Local Mapping is deactivated (TODO Not available in inertial mode)
             // 只进行跟踪tracking，局部地图不工作
             // if(mState == LOST)
-
-            if(mState==RECENTLY_LOST && !bOK && mCurrentFrame.mTimeStamp-mTimeStampLost>3.0f)
+            // tracy: add mState==RECENTLY_LOST
+            if((mState == LOST || mState==RECENTLY_LOST) && !bOK && mCurrentFrame.mTimeStamp-mTimeStampLost>3.0f)
             {
                 if(mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD)
                     Verbose::PrintMess("IMU. State LOST", Verbose::VERBOSITY_NORMAL);

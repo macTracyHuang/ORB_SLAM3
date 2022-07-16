@@ -265,6 +265,7 @@ private:
     //
     string mStrLoadAtlasFromFile;
     string mStrSaveAtlasToFile;
+    int mIntSavePointCloud;
 
     string mStrVocabularyFilePath;
 
