@@ -268,10 +268,10 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         float meank = fsSettings["meank"];
         float thresh = fsSettings["thresh"];
 
-        mpPointCloudMapping = new PointCloudMapping(resolution, meank, thresh);
-        mpLocalMapper->SetPointCloudMapper(mpPointCloudMapping);
-        mpLoopCloser->SetPointCloudMapper(mpPointCloudMapping);
-        mpTracker->SetPointCloudMapper(mpPointCloudMapping);
+        // mpPointCloudMapping = new PointCloudMapping(resolution, meank, thresh);
+        // mpLocalMapper->SetPointCloudMapper(mpPointCloudMapping);
+        // mpLoopCloser->SetPointCloudMapper(mpPointCloudMapping);
+        // mpTracker->SetPointCloudMapper(mpPointCloudMapping);
     }
 
     //usleep(10*1000*1000);
