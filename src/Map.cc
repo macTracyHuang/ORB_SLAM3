@@ -396,75 +396,150 @@ void Map::SetLastMapChange(int currentChangeId)
 /** 预保存，也就是把想保存的信息保存到备份的变量中
  * @param spCams 相机
  */
-void Map::PreSave(std::set<GeometricCamera *> &spCams)
+void Map::PreSave(std::set<GeometricCamera*> &spCams)
 {
-    int nMPWithoutObs = 0;  // 统计用
-    // 1. 剔除一下无效观测
-    for (MapPoint *pMPi : mspMapPoints)
+    int nMPWithoutObs = 0;
+
+    std::set<MapPoint*> tmp_mspMapPoints1;
+    tmp_mspMapPoints1.insert(mspMapPoints.begin(), mspMapPoints.end());
+
+    for(MapPoint* pMPi : tmp_mspMapPoints1)
     {
-        if (!pMPi || pMPi->isBad())
+        if(!pMPi || pMPi->isBad())
             continue;
 
-        if (pMPi->GetObservations().size() == 0)
+        if(pMPi->GetObservations().size() == 0)
         {
             nMPWithoutObs++;
         }
-        map<KeyFrame *, std::tuple<int, int>> mpObs = pMPi->GetObservations();
-        for (map<KeyFrame *, std::tuple<int, int>>::iterator it = mpObs.begin(), end = mpObs.end(); it != end; ++it)
+        map<KeyFrame*, std::tuple<int,int>> mpObs = pMPi->GetObservations();
+        for(map<KeyFrame*, std::tuple<int,int>>::iterator it= mpObs.begin(), end=mpObs.end(); it!=end; ++it)
         {
-            if (it->first->GetMap() != this || it->first->isBad())
+            if(it->first->GetMap() != this || it->first->isBad())
             {
                 pMPi->EraseObservation(it->first);
             }
+
         }
     }
 
     // Saves the id of KF origins
-    // 2. 保存最开始的帧的id，貌似一个map的mvpKeyFrameOrigins里面只有一个，可以验证一下
     mvBackupKeyFrameOriginsId.clear();
     mvBackupKeyFrameOriginsId.reserve(mvpKeyFrameOrigins.size());
-    for (int i = 0, numEl = mvpKeyFrameOrigins.size(); i < numEl; ++i)
+    for(int i = 0, numEl = mvpKeyFrameOrigins.size(); i < numEl; ++i)
     {
         mvBackupKeyFrameOriginsId.push_back(mvpKeyFrameOrigins[i]->mnId);
     }
 
+
     // Backup of MapPoints
-    // 3. 保存一下对应的mp
     mvpBackupMapPoints.clear();
-    for (MapPoint *pMPi : mspMapPoints)
+
+    std::set<MapPoint*> tmp_mspMapPoints2;
+    tmp_mspMapPoints2.insert(mspMapPoints.begin(), mspMapPoints.end());
+
+    for(MapPoint* pMPi : tmp_mspMapPoints2)
     {
-        if (!pMPi || pMPi->isBad())
+        if(!pMPi || pMPi->isBad())
             continue;
 
         mvpBackupMapPoints.push_back(pMPi);
-        pMPi->PreSave(mspKeyFrames, mspMapPoints);
+        pMPi->PreSave(mspKeyFrames,mspMapPoints);
     }
 
     // Backup of KeyFrames
-    // 4. 保存一下对应的KF
     mvpBackupKeyFrames.clear();
-    for (KeyFrame *pKFi : mspKeyFrames)
+    for(KeyFrame* pKFi : mspKeyFrames)
     {
-        if (!pKFi || pKFi->isBad())
+        if(!pKFi || pKFi->isBad())
             continue;
 
         mvpBackupKeyFrames.push_back(pKFi);
-        pKFi->PreSave(mspKeyFrames, mspMapPoints, spCams);
+        pKFi->PreSave(mspKeyFrames,mspMapPoints, spCams);
     }
 
-    // 保存一些id
     mnBackupKFinitialID = -1;
-    if (mpKFinitial)
+    if(mpKFinitial)
     {
         mnBackupKFinitialID = mpKFinitial->mnId;
     }
 
     mnBackupKFlowerID = -1;
-    if (mpKFlowerID)
+    if(mpKFlowerID)
     {
         mnBackupKFlowerID = mpKFlowerID->mnId;
     }
+
 }
+// void Map::PreSave(std::set<GeometricCamera *> &spCams)
+// {
+//     int nMPWithoutObs = 0;  // 统计用
+//     // 1. 剔除一下无效观测
+//     for (MapPoint *pMPi : mspMapPoints)
+//     {
+//         if (!pMPi || pMPi->isBad())
+//             continue;
+
+//         if (pMPi->GetObservations().size() == 0)
+//         {
+//             nMPWithoutObs++;
+//         }
+//         map<KeyFrame *, std::tuple<int, int>> mpObs = pMPi->GetObservations();
+//         for (map<KeyFrame *, std::tuple<int, int>>::iterator it = mpObs.begin(), end = mpObs.end(); it != end; ++it)
+//         {
+//             if (it->first->GetMap() != this || it->first->isBad())
+//             {
+//                 pMPi->EraseObservation(it->first);
+//             }
+//         }
+//     }
+
+//     // Saves the id of KF origins
+//     // 2. 保存最开始的帧的id，貌似一个map的mvpKeyFrameOrigins里面只有一个，可以验证一下
+//     mvBackupKeyFrameOriginsId.clear();
+//     mvBackupKeyFrameOriginsId.reserve(mvpKeyFrameOrigins.size());
+//     for (int i = 0, numEl = mvpKeyFrameOrigins.size(); i < numEl; ++i)
+//     {
+//         mvBackupKeyFrameOriginsId.push_back(mvpKeyFrameOrigins[i]->mnId);
+//     }
+
+//     // Backup of MapPoints
+//     // 3. 保存一下对应的mp
+//     mvpBackupMapPoints.clear();
+//     for (MapPoint *pMPi : mspMapPoints)
+//     {
+//         if (!pMPi || pMPi->isBad())
+//             continue;
+
+//         mvpBackupMapPoints.push_back(pMPi);
+//         pMPi->PreSave(mspKeyFrames, mspMapPoints);
+//     }
+
+//     // Backup of KeyFrames
+//     // 4. 保存一下对应的KF
+//     mvpBackupKeyFrames.clear();
+//     for (KeyFrame *pKFi : mspKeyFrames)
+//     {
+//         if (!pKFi || pKFi->isBad())
+//             continue;
+
+//         mvpBackupKeyFrames.push_back(pKFi);
+//         pKFi->PreSave(mspKeyFrames, mspMapPoints, spCams);
+//     }
+
+//     // 保存一些id
+//     mnBackupKFinitialID = -1;
+//     if (mpKFinitial)
+//     {
+//         mnBackupKFinitialID = mpKFinitial->mnId;
+//     }
+
+//     mnBackupKFlowerID = -1;
+//     if (mpKFlowerID)
+//     {
+//         mnBackupKFlowerID = mpKFlowerID->mnId;
+//     }
+// }
 
 /** 后加载，也就是把备份的变量恢复到正常变量中
  * @param spCams 相机

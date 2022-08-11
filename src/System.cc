@@ -624,7 +624,7 @@ void System::Shutdown()
 
     if(!mStrSaveAtlasToFile.empty())
     {
-        std::cout << "start to save Atlas Map as " << mStrSaveAtlasToFile << std::endl;
+        std::cout << "as " << mStrSaveAtlasToFile << std::endl;
         Verbose::PrintMess("Atlas saving to file " + mStrSaveAtlasToFile, Verbose::VERBOSITY_NORMAL);
         SaveAtlas(FileType::BINARY_FILE);
     }
@@ -736,6 +736,7 @@ void System::SaveKeyFrameTrajectoryTUM(const string &filename)
     }
 
     f.close();
+    cout << endl << "Successfully Saving keyframe trajectory to " << filename << " ..." << endl;
 }
 
 void System::SaveTrajectoryEuRoC(const string &filename)
@@ -750,7 +751,7 @@ void System::SaveTrajectoryEuRoC(const string &filename)
 
     vector<Map*> vpMaps = mpAtlas->GetAllMaps();
     int numMaxKFs = 0;
-    Map* pBiggerMap;
+    Map* pBiggerMap = nullptr;
     std::cout << "There are " << std::to_string(vpMaps.size()) << " maps in the atlas" << std::endl;
     for(Map* pMap :vpMaps)
     {

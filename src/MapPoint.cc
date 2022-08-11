@@ -760,16 +760,17 @@ void MapPoint::UpdateMap(Map* pMap)
  */
 void MapPoint::PreSave(set<KeyFrame*>& spKF,set<MapPoint*>& spMP)
 {
-    // 1. 备份替代的MP id
     mBackupReplacedId = -1;
     if(mpReplaced && spMP.find(mpReplaced) != spMP.end())
         mBackupReplacedId = mpReplaced->mnId;
 
-    // 2. 备份观测
     mBackupObservationsId1.clear();
     mBackupObservationsId2.clear();
     // Save the id and position in each KF who view it
-    for(std::map<KeyFrame*,std::tuple<int,int> >::const_iterator it = mObservations.begin(), end = mObservations.end(); it != end; ++it)
+    std::map<KeyFrame*,std::tuple<int,int> > tmp_mObservations;
+    tmp_mObservations.insert(mObservations.begin(), mObservations.end());
+
+    for(std::map<KeyFrame*,std::tuple<int,int> >::const_iterator it = tmp_mObservations.begin(), end = tmp_mObservations.end(); it != end; ++it)
     {
         KeyFrame* pKFi = it->first;
         if(spKF.find(pKFi) != spKF.end())
@@ -784,12 +785,43 @@ void MapPoint::PreSave(set<KeyFrame*>& spKF,set<MapPoint*>& spMP)
     }
 
     // Save the id of the reference KF
-    // 3. 备份参考关键帧ID
     if(spKF.find(mpRefKF) != spKF.end())
     {
         mBackupRefKFId = mpRefKF->mnId;
     }
 }
+// void MapPoint::PreSave(set<KeyFrame*>& spKF,set<MapPoint*>& spMP)
+// {
+//     // 1. 备份替代的MP id
+//     mBackupReplacedId = -1;
+//     if(mpReplaced && spMP.find(mpReplaced) != spMP.end())
+//         mBackupReplacedId = mpReplaced->mnId;
+
+//     // 2. 备份观测
+//     mBackupObservationsId1.clear();
+//     mBackupObservationsId2.clear();
+//     // Save the id and position in each KF who view it
+//     for(std::map<KeyFrame*,std::tuple<int,int> >::const_iterator it = mObservations.begin(), end = mObservations.end(); it != end; ++it)
+//     {
+//         KeyFrame* pKFi = it->first;
+//         if(spKF.find(pKFi) != spKF.end())
+//         {
+//             mBackupObservationsId1[it->first->mnId] = get<0>(it->second);
+//             mBackupObservationsId2[it->first->mnId] = get<1>(it->second);
+//         }
+//         else
+//         {
+//             EraseObservation(pKFi);
+//         }
+//     }
+
+//     // Save the id of the reference KF
+//     // 3. 备份参考关键帧ID
+//     if(spKF.find(mpRefKF) != spKF.end())
+//     {
+//         mBackupRefKFId = mpRefKF->mnId;
+//     }
+// }
 
 /**
  * @brief 后加载
