@@ -78,5 +78,4 @@ cmake-build-debug/
 .vscode/c_cpp_properties.json
 .vscode/settings.json
 
-
-./postprocess/ROS-Bag-Tools
+*.bag
