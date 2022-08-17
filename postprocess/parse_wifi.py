@@ -53,13 +53,16 @@ if __name__ == "__main__":
         num_ap = len(unique_addr)
         print("total ap: " +  str(num_ap))
         addr_map = {} # look up idx from bssid
-        fout.write("timestamp ")
+        fout.write("timestamp,")
 
         for idx, addr in enumerate(unique_addr):
             addr_map[addr] = idx
-            fout.write(addr + ' ')
+            if(idx==len(unique_addr)-1):
+                fout.write(addr + '\n') # end bssid title
+            else:
+                fout.write(addr + ',')
         
-        fout.write('\n') # end bssid title 
+        
 
         wrp = [[0]*num_ap for _ in range(len(data))] # row: timestamp , col: rssi of bssid 
 
@@ -81,10 +84,12 @@ if __name__ == "__main__":
         keys = sorted(data.keys())
 
         for i, t in enumerate(keys):
-            fout.write(t + ' ')
-            for rssi in wrp[i]:
-                fout.write(str(rssi) + ',')
-            fout.write('\n')
+            fout.write(t + ',')
+            for j, rssi in enumerate(wrp[i]):
+                if j==len(wrp[i])-1:
+                    fout.write(str(rssi) + '\n')
+                else:
+                    fout.write(str(rssi) + ',')
 
 
         # fout.close()
