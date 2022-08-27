@@ -475,6 +475,7 @@ namespace ORB_SLAM3 {
         sLoadFrom_ = readParameter<string>(fSettings,"System.LoadAtlasFromFile",found,false);
         sSaveto_ = readParameter<string>(fSettings,"System.SaveAtlasToFile",found,false);
         sSaveplc_ = readParameter<int>(fSettings,"System.SavePointCloud",found,false);
+        cout << "savePointCloud: " << sSaveplc_<<endl;
     }
 
     void Settings::readOtherParameters(cv::FileStorage& fSettings) {

@@ -268,13 +268,17 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         float meank = fsSettings["meank"];
         float thresh = fsSettings["thresh"];
 
-        // mpPointCloudMapping = new PointCloudMapping(resolution, meank, thresh);
-        // mpLocalMapper->SetPointCloudMapper(mpPointCloudMapping);
-        // mpLoopCloser->SetPointCloudMapper(mpPointCloudMapping);
-        // mpTracker->SetPointCloudMapper(mpPointCloudMapping);
+
+        if (mIntSavePointCloud){
+            mpPointCloudMapping = new PointCloudMapping(resolution, meank, thresh);
+            mpLocalMapper->SetPointCloudMapper(mpPointCloudMapping);
+            mpLoopCloser->SetPointCloudMapper(mpPointCloudMapping);
+            mpTracker->SetPointCloudMapper(mpPointCloudMapping);
+        }
+
     }
 
-    //usleep(10*1000*1000);
+    // usleep(10*1000*1000);
 
     //Initialize the Viewer thread and launch
     // 创建并开启显示线程
@@ -1655,7 +1659,11 @@ string System::CalculateCheckSum(string filename, int type)
 void System::SavePointcloudMap(){
     
     if (mIntSavePointCloud)
+    {
+        cout << "start saving pcl"<<endl;
         mpPointCloudMapping->save();
+    }
+        
     else
         cout << "Disable Save pointcloud map under localization mode" << endl;
 }

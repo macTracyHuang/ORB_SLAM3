@@ -209,7 +209,9 @@ void PointCloudMapping::viewer()
 void PointCloudMapping::save()
 {
     std::unique_lock<std::mutex> lck(mMutexGlobalMap);
-    pcl::io::savePCDFile("result.pcd", *globalMap);
+    size_t num_points = globalMap->size();
+    cout << "num_point:" << num_points<<endl;
+    pcl::io::savePCDFile("result_csie.pcd", *globalMap);
     cout << "globalMap save finished" << endl;
 }
 void PointCloudMapping::updatecloud(Map &curMap)

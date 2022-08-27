@@ -1718,6 +1718,8 @@ Sophus::SE3f Tracking::GrabImageMonocular(const cv::Mat &im, const double &times
 
     lastID = mCurrentFrame.mnId;
     // Step 3 ：跟踪
+
+    cout << "start track mono" <<endl;
     Track();
 
     // 返回当前帧的位姿
@@ -2110,7 +2112,12 @@ void Tracking::Track()
         {
             // 如果没有成功初始化，直接返回
             mLastFrame = Frame(mCurrentFrame);
+            cout << "Initialization Failed" <<'\n';
             return;
+        }
+        else
+        {
+            cout << "Initialization Failed OK" <<'\n';
         }
 
         if(mpAtlas->GetAllMaps().size() == 1)
@@ -2998,6 +3005,7 @@ void Tracking::CreateInitialMapMonocular()
     // Step 4 全局BA优化，同时优化所有位姿和三维点
     Verbose::PrintMess("New Map created with " + to_string(mpAtlas->MapPointsInMap()) + " points", Verbose::VERBOSITY_QUIET);
     Optimizer::GlobalBundleAdjustemnt(mpAtlas->GetCurrentMap(),20);
+    cout << "end step 4"<<endl;
 
     // Step 5 取场景的中值深度，用于尺度归一化 
     // 为什么是 pKFini 而不是 pKCur ? 答：都可以的，内部做了位姿变换了
@@ -3013,6 +3021,7 @@ void Tracking::CreateInitialMapMonocular()
     {
         Verbose::PrintMess("Wrong initialization, reseting...", Verbose::VERBOSITY_QUIET);
         mpSystem->ResetActiveMap();
+        
         return;
     }
 

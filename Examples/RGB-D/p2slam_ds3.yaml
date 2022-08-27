@@ -10,10 +10,10 @@
 # System.LoadAtlasFromFile: "RGBD_p2slam_ds3.bin"
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
-# System.SaveAtlasToFile: "RGBD_p2slam_ds3.bin" 
+# System.SaveAtlasToFile: "RGBD_0817.bin" 
 
 # Save point cloud: 0:false, 1:true
-# System.SavePointCloud: 0;
+# System.SavePointCloud: 1;
 #-----------------------------
 
 
