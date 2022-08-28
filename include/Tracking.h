@@ -130,7 +130,8 @@ public:
         OK=2,
         RECENTLY_LOST=3,
         LOST=4,
-        OK_KLT=5
+        OK_KLT=5,
+        LOC_INIT=6
     };
 
     eTrackingState mState;

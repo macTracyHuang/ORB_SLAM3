@@ -9,7 +9,7 @@
 
 # # If the LoadFile doesn't exist, the system give a message and create a new Atlas from scratch
 # System.LoadAtlasFromFile: "0811_wifi2.bin"
-System.LoadAtlasFromFile: "RGBD_0823.bin"
+# System.LoadAtlasFromFile: "RGBD_0823.bin"
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
 # System.SaveAtlasToFile: "0811_wifi2.bin" 
@@ -28,10 +28,10 @@ Camera1.cx: 330.3830261230469
 Camera1.cy: 251.561569213867
 
 # distortion parameters
-Camera1.k1: 0.1226457032677955 #0.0
-Camera1.k2: -0.23093949642074663 #0.0
-Camera1.p1: -0.000853466142083289 #0.0
-Camera1.p2: -0.0012474979313750296 #0.0
+Camera1.k1: 0.0
+Camera1.k2: 0.0
+Camera1.p1: 0.0
+Camera1.p2: 0.0
 
 # Camera resolution
 Camera.width: 640
@@ -47,13 +47,13 @@ Camera.RGB: 1
 # ORB Parameters
 #--------------------------------------------------------------------------------------------
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 1100
+ORBextractor.nFeatures: 1000
 
 # ORB Extractor: Scale factor between levels in the scale pyramid 	
 ORBextractor.scaleFactor: 1.2
 
 # ORB Extractor: Number of levels in the scale pyramid	
-ORBextractor.nLevels: 8
+ORBextractor.nLevels: 6
 
 # ORB Extractor: Fast threshold
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.

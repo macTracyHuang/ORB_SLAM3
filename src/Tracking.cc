@@ -1690,7 +1690,18 @@ Sophus::SE3f Tracking::GrabImageMonocular(const cv::Mat &im, const double &times
     if (mSensor == System::MONOCULAR)
     {
         if(mState==NOT_INITIALIZED || mState==NO_IMAGES_YET ||(lastID - initID) < mMaxFrames)
-            mCurrentFrame = Frame(mImGray,timestamp,mpIniORBextractor,mpORBVocabulary,mpCamera,mDistCoef,mbf,mThDepth);
+        {
+            if(mbOnlyTracking)
+            {
+                mCurrentFrame = Frame(mImGray,timestamp,mpORBextractorLeft,mpORBVocabulary,mpCamera,mDistCoef,mbf,mThDepth);
+                mState=LOC_INIT;
+                std::cout << "set cur frame"<<'\n';
+            }
+            else
+            {
+                mCurrentFrame = Frame(mImGray,timestamp,mpIniORBextractor,mpORBVocabulary,mpCamera,mDistCoef,mbf,mThDepth);
+            }
+        } 
         else
             mCurrentFrame = Frame(mImGray,timestamp,mpORBextractorLeft,mpORBVocabulary,mpCamera,mDistCoef,mbf,mThDepth);
     }
@@ -1718,8 +1729,6 @@ Sophus::SE3f Tracking::GrabImageMonocular(const cv::Mat &im, const double &times
 
     lastID = mCurrentFrame.mnId;
     // Step 3 ：跟踪
-
-    cout << "start track mono" <<endl;
     Track();
 
     // 返回当前帧的位姿
@@ -2092,9 +2101,11 @@ void Tracking::Track()
         mbMapUpdated = true;
     }
 
+
     // Step 5 初始化
     if(mState==NOT_INITIALIZED)
     {
+
         if(mSensor==System::STEREO || mSensor==System::RGBD || mSensor==System::IMU_STEREO || mSensor==System::IMU_RGBD)
         {
             // 双目RGBD相机的初始化共用一个函数
@@ -2125,6 +2136,7 @@ void Tracking::Track()
             // 如果当前地图是第一个地图，记录当前帧id为第一帧
             mnFirstFrameId = mCurrentFrame.mnId;
         }
+
     }
     else
     {
@@ -2273,11 +2285,13 @@ void Tracking::Track()
         }
         else  // 纯定位模式
         {
+
+            std::cout << "promising"<<endl;
             // Localization Mode: Local Mapping is deactivated (TODO Not available in inertial mode)
             // 只进行跟踪tracking，局部地图不工作
             // if(mState == LOST)
             // tracy: add mState==RECENTLY_LOST
-            if((mState == LOST || mState==RECENTLY_LOST) && !bOK && mCurrentFrame.mTimeStamp-mTimeStampLost>3.0f)
+            if((mState == LOC_INIT ||mState == LOST || mState==RECENTLY_LOST) && !bOK && mCurrentFrame.mTimeStamp-mTimeStampLost>3.0f)
             {
                 if(mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD)
                     Verbose::PrintMess("IMU. State LOST", Verbose::VERBOSITY_NORMAL);
@@ -2301,7 +2315,9 @@ void Tracking::Track()
                     else
                     {
                         // 如果恒速模型不被满足,那么就只能够通过参考关键帧来跟踪
+                        cout << "TrackReferenceKeyFrame"<<endl;
                         bOK = TrackReferenceKeyFrame();
+                        cout << "end TrackReferenceKeyFrame"<<endl;
                     }
                 }
                 else
@@ -2313,7 +2329,7 @@ void Tracking::Track()
                     // the "visual odometry" solution.
 
                     // mbVO为true，表明此帧匹配了很少（小于10）的地图点，要跟丢的节奏，既做跟踪又做重定位
-
+                    cout << "帧匹配了很少（小于10）的地图点"<<endl;
                     // MM=Motion Model,通过运动模型进行跟踪的结果
                     bool bOKMM = false;
                     // 通过重定位方法来跟踪的结果
@@ -3004,7 +3020,8 @@ void Tracking::CreateInitialMapMonocular()
     // Bundle Adjustment
     // Step 4 全局BA优化，同时优化所有位姿和三维点
     Verbose::PrintMess("New Map created with " + to_string(mpAtlas->MapPointsInMap()) + " points", Verbose::VERBOSITY_QUIET);
-    Optimizer::GlobalBundleAdjustemnt(mpAtlas->GetCurrentMap(),20);
+    if(!mbOnlyTracking)
+        Optimizer::GlobalBundleAdjustemnt(mpAtlas->GetCurrentMap(),20);
     cout << "end step 4"<<endl;
 
     // Step 5 取场景的中值深度，用于尺度归一化 
@@ -3378,6 +3395,7 @@ void Tracking::UpdateLastFrame()
  */
 bool Tracking::TrackWithMotionModel()
 {
+    // std::cout << "TrackWithMotionModel" <<endl;
     // 最小距离 < 0.9*次小距离 匹配成功，检查旋转
     ORBmatcher matcher(0.9,true);
 
@@ -4363,6 +4381,7 @@ void Tracking::UpdateLocalKeyFrames()
 bool Tracking::Relocalization()
 {
     Verbose::PrintMess("Starting relocalization", Verbose::VERBOSITY_NORMAL);
+    cout << "Starting relocalization"<<'\n';
     // Compute Bag of Words Vector
     // Step 1: 计算当前帧特征点的Bow映射
     mCurrentFrame.ComputeBoW();
@@ -4374,11 +4393,12 @@ bool Tracking::Relocalization()
 
     if(vpCandidateKFs.empty()) {
         Verbose::PrintMess("There are not candidates", Verbose::VERBOSITY_NORMAL);
+        cout << "There are not candidates"<<endl;
         return false;
     }
 
     const int nKFs = vpCandidateKFs.size();
-
+    cout << " vpCandidateKFs: " << nKFs<<endl;
     // We perform first an ORB matching with each candidate
     // If enough matches are found we setup a PnP solver
     ORBmatcher matcher(0.75,true);
@@ -4408,6 +4428,7 @@ bool Tracking::Relocalization()
         {
             // 当前帧和候选关键帧用BoW进行快速匹配，匹配结果记录在vvpMapPointMatches，nmatches表示匹配的数目
             int nmatches = matcher.SearchByBoW(pKF,mCurrentFrame,vvpMapPointMatches[i]);
+            cout << "nmatches: " << nmatches<<endl;
             // 如果和当前帧的匹配数小于15,那么只能放弃这个关键帧
             if(nmatches<15)
             {
@@ -4433,7 +4454,7 @@ bool Tracking::Relocalization()
             }
         }
     }
-
+    cout << "nCandidates: " << nCandidates<<endl;
     // Alternatively perform some iterations of P4P RANSAC
     // Until we found a camera pose supported by enough inliers
     // 足够的内点才能匹配使用PNP算法，MLPnP需要至少6个点
@@ -4569,6 +4590,7 @@ bool Tracking::Relocalization()
     // 折腾了这么久还是没有匹配上，重定位失败
     if(!bMatch)
     {
+        cout << "fail reloc"<<endl;
         return false;
     }
     else
