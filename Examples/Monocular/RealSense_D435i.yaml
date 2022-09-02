@@ -9,7 +9,8 @@
 
 # # If the LoadFile doesn't exist, the system give a message and create a new Atlas from scratch
 # System.LoadAtlasFromFile: "0811_wifi2.bin"
-# System.LoadAtlasFromFile: "RGBD_0823.bin"
+System.LoadAtlasFromFile: "RGBD_0831_day.bin"
+
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
 # System.SaveAtlasToFile: "0811_wifi2.bin" 

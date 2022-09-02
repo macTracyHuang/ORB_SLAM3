@@ -2286,7 +2286,6 @@ void Tracking::Track()
         else  // 纯定位模式
         {
 
-            std::cout << "promising"<<endl;
             // Localization Mode: Local Mapping is deactivated (TODO Not available in inertial mode)
             // 只进行跟踪tracking，局部地图不工作
             // if(mState == LOST)
@@ -2315,9 +2314,7 @@ void Tracking::Track()
                     else
                     {
                         // 如果恒速模型不被满足,那么就只能够通过参考关键帧来跟踪
-                        cout << "TrackReferenceKeyFrame"<<endl;
                         bOK = TrackReferenceKeyFrame();
-                        cout << "end TrackReferenceKeyFrame"<<endl;
                     }
                 }
                 else
@@ -2329,7 +2326,6 @@ void Tracking::Track()
                     // the "visual odometry" solution.
 
                     // mbVO为true，表明此帧匹配了很少（小于10）的地图点，要跟丢的节奏，既做跟踪又做重定位
-                    cout << "帧匹配了很少（小于10）的地图点"<<endl;
                     // MM=Motion Model,通过运动模型进行跟踪的结果
                     bool bOKMM = false;
                     // 通过重定位方法来跟踪的结果

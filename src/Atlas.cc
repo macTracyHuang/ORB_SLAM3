@@ -366,8 +366,9 @@ void Atlas::PreSave()
             SetMapBad(pMi);
             continue;
         }
+        cout << "starting saving map"<<'\n';
         pMi->PreSave(spCams);
-        cout << "save map: " << pMi->GetId() <<"kfinmap: "<< pMi->KeyFramesInMap() << " mpinmap: " << pMi->MapPointsInMap()<< endl;
+        cout << "save map: " << pMi->GetId() <<"kfinmap: "<< pMi->KeyFramesInMap() << " mpinmap: " << pMi->MapPointsInMap()<< '\n';
     }
 
     // 4. 删除坏地图

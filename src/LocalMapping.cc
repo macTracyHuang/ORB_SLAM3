@@ -1264,6 +1264,8 @@ void LocalMapping::KeyFrameCulling()
                         // 对于双目，仅考虑近处（不超过基线的40倍 ）的地图点
                         if(pKF->mvDepth[i]>pKF->mThDepth || pKF->mvDepth[i]<0)
                             continue;
+                        // if((pKF->NLeft == -1||i < pKF->NLeft)&&(pKF->mvDepth[i]>pKF->mThDepth || pKF->mvDepth[i]<0))
+                        //     continue;
                     }
 
                     nMPs++;
