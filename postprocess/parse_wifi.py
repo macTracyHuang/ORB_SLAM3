@@ -20,7 +20,7 @@ if __name__ == "__main__":
         csiebssid = []
         with  open("csiebssid.txt",'r') as f:
             for id in f.read().splitlines():
-                csiebssid.append(id)
+                csiebssid.append(id[:-2] + '**')
 
 
         # print(csiebssid)
@@ -33,7 +33,7 @@ if __name__ == "__main__":
                     timestr = "%.6f" % msg.header.stamp.to_sec() # s TUM
                     fingerprint = msg.list
                     for addressRSSI in fingerprint:
-                        bssid = addressRSSI.address
+                        bssid = addressRSSI.address[:2] + ':' + addressRSSI.address[2:4] + ':' + addressRSSI.address[4:6] + ':' + addressRSSI.address[6:8] + ':' + addressRSSI.address[8:10] + ':**'
                         rssi = int(addressRSSI.rssi)
                         data[timestr].append([bssid, rssi])
                         if bssid in unique_addr:
@@ -64,7 +64,7 @@ if __name__ == "__main__":
         
         
 
-        wrp = [[0]*num_ap for _ in range(len(data))] # row: timestamp , col: rssi of bssid 
+        wrp = [[-100]*num_ap for _ in range(len(data))] # row: timestamp , col: rssi of bssid 
 
         count = 0
         minAp = 1e9
@@ -93,4 +93,4 @@ if __name__ == "__main__":
 
 
         # fout.close()
-        print("Timestamp file has been saved at:" + save_path)
+        print("wifi file has been saved at:" + save_path)

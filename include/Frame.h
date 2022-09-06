@@ -162,6 +162,10 @@ public:
         return mbHasVelocity;
     }
 
+    // tm 
+    static bool lId(Frame &pF1, Frame &pF2){
+        return pF1.mnId<pF2.mnId;
+    }
 
 
 private:

@@ -9,7 +9,7 @@
 
 # # If the LoadFile doesn't exist, the system give a message and create a new Atlas from scratch
 # System.LoadAtlasFromFile: "0811_wifi2.bin"
-System.LoadAtlasFromFile: "RGBD_0831_day.bin"
+System.LoadAtlasFromFile: "RGBD_0829_2.bin"
 
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
@@ -39,7 +39,7 @@ Camera.width: 640
 Camera.height: 480
 
 # Camera frames per second 
-Camera.fps: 30
+Camera.fps: 15
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1

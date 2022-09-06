@@ -11,6 +11,7 @@ if __name__ == "__main__":
     
     with  open("csiebssid.txt",'w') as fout:
         for e in addr:
-            fout.write(e.replace(':','').upper()+'\n')
+            # fout.write(e.replace(':','').upper()+'\n')
+	    fout.write(e.upper()+'\n')
 
     print("total ap: " + str(len(addr)))

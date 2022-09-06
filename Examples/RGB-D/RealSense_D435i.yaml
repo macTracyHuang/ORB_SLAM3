@@ -2,10 +2,10 @@
 # When the variables are commented, the system doesn't load a previous session or not store the current one
 
 # If the LoadFile doesn't exist, the system give a message and create a new Atlas from scratch
-# System.LoadAtlasFromFile: "RGBD_0828.bin"
+System.LoadAtlasFromFile: "RGBD_0829_2.bin"
 
 # The store file is created from the current session, if a file with the same name exists it is deleted
-# System.SaveAtlasToFile: "RGBD_0831_day.bin"
+# System.SaveAtlasToFile: "RGBD_0829.bin"
 # Save point cloud: 0:false, 1:true
 # System.SavePointCloud: 1
 #--------------------------------------------------------------------------------------------
@@ -79,6 +79,6 @@ Viewer.ViewpointZ: -3.5
 Viewer.ViewpointF: 500.0
 
 #pcl parameters
-PointCloudMapping.Resolution: 0.05
+PointCloudMapping.Resolution: 0.01
 meank: 50
 thresh: 1.0

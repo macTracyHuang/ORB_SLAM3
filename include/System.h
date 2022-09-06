@@ -161,6 +161,9 @@ public:
     void SaveTrajectoryEuRoC(const string &filename, Map* pMap);
     void SaveKeyFrameTrajectoryEuRoC(const string &filename, Map* pMap);
 
+    //tm save frame trajec
+    void SaveReLocTrajectoryTUM(const string &filename);
+
     // Save data used for initialization debug
     void SaveDebugData(const int &iniIdx);
 
@@ -270,6 +273,9 @@ private:
     string mStrVocabularyFilePath;
 
     Settings* settings_;
+    
+    // tm - keep frame in reloc mode
+    std::vector<Frame> mvBackupFrames;
 };
 
 }// namespace ORB_SLAM

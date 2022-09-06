@@ -542,6 +542,14 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im, const double &timestamp, 
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
 
+    // tm : save frame in reloc mode
+    if (!mStrLoadAtlasFromFile.empty())
+    {
+        // cout << "push" << endl;
+        mvBackupFrames.push_back(mpTracker->mCurrentFrame);
+    }
+    //end tm
+    
     return Tcw;
 }
 
@@ -1666,6 +1674,67 @@ void System::SavePointcloudMap(){
         
     else
         cout << "Disable Save pointcloud map under localization mode" << endl;
+}
+
+// tm save reloc trajec
+void System::SaveReLocTrajectoryTUM(const string &filename)
+{
+    cout << endl << "Saving ReLoc trajectory to " << filename << " ..." << endl;
+    cout << "Frame size: "<<mvBackupFrames.size() <<endl;
+    // sort(mvBackupFrames.begin(),mvBackupFrames.end(),Frame::lId);
+    Sophus::SE3<float> original;
+
+    // calculate range
+    vector<KeyFrame*> vpKFs = mpAtlas->GetAllKeyFrames();
+
+    float mnx = 1e9, mny = 1e9;
+    float mxx = -1e9, mxy = -1e9;
+    for(size_t i=0; i<vpKFs.size(); i++)
+    {
+        KeyFrame* pKF = vpKFs[i];
+
+       // pKF->SetPose(pKF->GetPose()*Two);
+
+        if(pKF->isBad())
+            continue;
+
+        Sophus::SE3f Twc = pKF->GetPoseInverse();
+        Eigen::Quaternionf q = Twc.unit_quaternion();
+        Eigen::Vector3f t = Twc.translation();
+        mnx = min(mnx,t(0)), mny = min(mny,t(2));
+        mxx = max(mxx, t(0)), mxy = max(mxy,t(2));
+
+    }
+
+    cout << "x range: " << mnx << ',' << mxx << endl;
+    cout << "y range: " << mny << ',' << mxy << endl;
+    ofstream f;
+    f.open(filename.c_str());
+    f << fixed;
+    
+    for(size_t i=0; i<mvBackupFrames.size(); i++)
+    {
+        Frame pF = mvBackupFrames[i];
+       // pKF->SetPose(pKF->GetPose()*Two);
+
+        if(pF.GetPose().matrix() == original.matrix())
+            continue;
+
+        Sophus::SE3f Twc = pF.GetPose().inverse();
+        Eigen::Quaternionf q = Twc.unit_quaternion();
+        Eigen::Vector3f t = Twc.translation();
+
+        if(t(0) > mxx || t(0) < mnx || t(2) > mxy || t(2) < mny)
+            continue;
+
+        f << setprecision(6) << pF.mTimeStamp << setprecision(7) << " " << t(0) << " " << t(1) << " " << t(2)
+          << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+
+    }
+
+    f.close();
+    
+    cout << endl << "Successfully Saving ReLoc trajectory to " << filename << " ..." << endl;
 }
 
 } //namespace ORB_SLAM
