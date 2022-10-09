@@ -100,6 +100,7 @@ public:
     }
 
     void CreateMapInAtlas();
+    void CreateMapInAtlas(Sophus::SE3f &Tcw);
     //std::mutex mMutexTracks;
 
     //--

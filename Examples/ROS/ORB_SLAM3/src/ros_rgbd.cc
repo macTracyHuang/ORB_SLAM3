@@ -21,6 +21,7 @@
 #include<algorithm>
 #include<fstream>
 #include<chrono>
+#include <cmath>
 
 #include<ros/ros.h>
 #include <cv_bridge/cv_bridge.h>
@@ -111,7 +112,19 @@ void ImageGrabber::GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const senso
         ROS_ERROR("cv_bridge exception: %s", e.what());
         return;
     }
-    mpSLAM->TrackRGBD(cv_ptrRGB->image,cv_ptrD->image,cv_ptrRGB->header.stamp.toSec());
+
+    // tm demo block frame
+    
+    const double block_time = 1661769533;
+    if (floor(cv_ptrRGB->header.stamp.toSec()) >= block_time && floor(cv_ptrRGB->header.stamp.toSec()) < block_time + 10)
+    {
+        cv::Mat blackImage = cv::Mat::zeros(cv::Size(640,480),CV_8UC1);
+        mpSLAM->TrackRGBD(blackImage,cv_ptrD->image,cv_ptrRGB->header.stamp.toSec());
+        // cout << cv_ptrRGB->image.size() << endl;
+    }
+    // tm
+    else
+        mpSLAM->TrackRGBD(cv_ptrRGB->image,cv_ptrD->image,cv_ptrRGB->header.stamp.toSec());
 }
 
 

@@ -482,6 +482,8 @@ namespace ORB_SLAM3 {
         bool found;
 
         thFarPoints_ = readParameter<float>(fSettings,"System.thFarPoints",found,false);
+        sTurnWifi_ = readParameter<int>(fSettings,"System.TurnWifi",found,false);
+        cout << "sTurnWifi: " << sTurnWifi_<<endl;
     }
 
     void Settings::precomputeRectificationMaps() {

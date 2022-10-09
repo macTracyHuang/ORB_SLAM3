@@ -194,6 +194,8 @@ public:
 
     void SavePointcloudMap();
 
+    int GetWifiMode();
+
 #ifdef REGISTER_TIMES
     void InsertRectTime(double& time);
     void InsertResizeTime(double& time);
@@ -269,6 +271,7 @@ private:
     string mStrLoadAtlasFromFile;
     string mStrSaveAtlasToFile;
     int mIntSavePointCloud;
+    int mIntTurnWifi;
 
     string mStrVocabularyFilePath;
 

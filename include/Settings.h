@@ -115,6 +115,7 @@ namespace ORB_SLAM3 {
         std::string atlasLoadFile() {return sLoadFrom_;}
         std::string atlasSaveFile() {return sSaveto_;}
         int savePointCloud() {return sSaveplc_;}
+        int turnWifi() {return sTurnWifi_;}
         
 
         float thFarPoints() {return thFarPoints_;}
@@ -225,6 +226,7 @@ namespace ORB_SLAM3 {
          */
         std::string sLoadFrom_, sSaveto_;
         int sSaveplc_ = 0;
+        int sTurnWifi_ = 0;
 
         /*
          * Other stuff

@@ -96,6 +96,9 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         mStrSaveAtlasToFile = settings_->atlasSaveFile();
         mIntSavePointCloud = settings_->savePointCloud();
 
+        // read wifi setting
+        mIntTurnWifi = settings_->turnWifi();
+
         cout << (*settings_) << endl;
     }
     else
@@ -294,7 +297,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
     // Fix verbosity
     // 打印输出中间的信息，设置为安静模式
-    Verbose::SetTh(Verbose::VERBOSITY_QUIET);
+    // Verbose::SetTh(Verbose::VERBOSITY_QUIET);
+    Verbose::SetTh(Verbose::VERBOSITY_DEBUG);
 
 }
 
@@ -389,7 +393,7 @@ Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const
         cerr << "ERROR: you called TrackRGBD but input sensor was not set to RGBD." << endl;
         exit(-1);
     }
-
+    cout << "start TrackRGBD"<<endl;
     cv::Mat imToFeed = im.clone();
     cv::Mat imDepthToFeed = depthmap.clone();
     if(settings_ && settings_->needToResize()){
@@ -444,12 +448,15 @@ Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const
         for(size_t i_imu = 0; i_imu < vImuMeas.size(); i_imu++)
             mpTracker->GrabImuData(vImuMeas[i_imu]);
 
+    cout << "before  mpTracker->GrabImageRGBD" <<endl;
     Sophus::SE3f Tcw = mpTracker->GrabImageRGBD(imToFeed,imDepthToFeed,timestamp,filename);
 
     unique_lock<mutex> lock2(mMutexState);
+    cout << "damn it"<<endl;
     mTrackingState = mpTracker->mState;
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
+    cout << "successed"<<endl;
     return Tcw;
 }
 
@@ -1735,6 +1742,12 @@ void System::SaveReLocTrajectoryTUM(const string &filename)
     f.close();
     
     cout << endl << "Successfully Saving ReLoc trajectory to " << filename << " ..." << endl;
+}
+
+// tm get wifi mode
+int System::GetWifiMode()
+{
+    return mIntTurnWifi;
 }
 
 } //namespace ORB_SLAM
