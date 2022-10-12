@@ -39,6 +39,7 @@
 #include "Eigen/Core"
 #include "sophus/se3.hpp"
 
+
 namespace ORB_SLAM3
 {
 #define FRAME_GRID_ROWS 48
@@ -49,6 +50,7 @@ class KeyFrame;
 class ConstraintPoseImu;
 class GeometricCamera;
 class ORBextractor;
+class Ap;
 
 class Frame
 {
@@ -302,6 +304,10 @@ public:
 
     int mnDataset;
 
+    // tm add for wifi
+    std::unordered_map<string, int> mApObserved;
+    bool AddNewApObserved(const string bssid, const int rssi);
+    // tm end add for wifi
 #ifdef REGISTER_TIMES
     double mTimeORB_Ext;
     double mTimeStereoMatch;

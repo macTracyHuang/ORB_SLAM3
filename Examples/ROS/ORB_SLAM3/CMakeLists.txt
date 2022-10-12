@@ -49,6 +49,7 @@ ${PROJECT_SOURCE_DIR}/../../../include/CameraModels
 ${PROJECT_SOURCE_DIR}/../../../Thirdparty/Sophus
 ${Pangolin_INCLUDE_DIRS}
 ${PCL_INCLUDE_DIRS}
+${PROJECT_SOURCE_DIR}/../../../Thirdparty/wifi_scan
 )
 
 set(LIBS 
@@ -124,5 +125,15 @@ src/ros_rgbd_inertial.cc
 )
 
 target_link_libraries(RGBD_inertial
+${LIBS}
+)
+
+
+# Node for RGB-D wifi Wifi
+rosbuild_add_executable(RGBD_WiFi
+src/ros_rgbd_wifi.cc
+)
+
+target_link_libraries(RGBD_WiFi
 ${LIBS}
 )

@@ -113,18 +113,8 @@ void ImageGrabber::GrabRGBD(const sensor_msgs::ImageConstPtr& msgRGB,const senso
         return;
     }
 
-    // tm demo block frame
-    
-    const double block_time = 1661769533;
-    if (floor(cv_ptrRGB->header.stamp.toSec()) >= block_time && floor(cv_ptrRGB->header.stamp.toSec()) < block_time + 10)
-    {
-        cv::Mat blackImage = cv::Mat::zeros(cv::Size(640,480),CV_8UC1);
-        mpSLAM->TrackRGBD(blackImage,cv_ptrD->image,cv_ptrRGB->header.stamp.toSec());
-        // cout << cv_ptrRGB->image.size() << endl;
-    }
-    // tm
-    else
-        mpSLAM->TrackRGBD(cv_ptrRGB->image,cv_ptrD->image,cv_ptrRGB->header.stamp.toSec());
+
+    mpSLAM->TrackRGBD(cv_ptrRGB->image,cv_ptrD->image,cv_ptrRGB->header.stamp.toSec());
 }
 
 

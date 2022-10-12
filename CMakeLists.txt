@@ -47,6 +47,7 @@ find_package(Pangolin REQUIRED)
 find_package(realsense2)
 find_package(PCL REQUIRED )
 
+
 include_directories(
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
@@ -92,6 +93,7 @@ src/TwoViewReconstruction.cc
 src/Config.cc
 src/Settings.cc
 src/PointCloudMapping.cc
+src/Ap.cc
 include/System.h
 include/Tracking.h
 include/LocalMapping.h
@@ -121,6 +123,7 @@ include/GeometricTools.h
 include/TwoViewReconstruction.h
 include/SerializationUtils.h
 include/Config.h
+include/Ap.h
 include/Settings.h)
 
 # add_subdirectory(Thirdparty/g2o)

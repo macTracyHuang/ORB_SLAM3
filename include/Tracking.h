@@ -243,6 +243,10 @@ protected:
 
     bool mbMapUpdated;
 
+    // add by tm
+    bool TrackWithWiFi();
+    // end add by tm
+    
     // Imu preintegration from last frame
     IMU::Preintegrated *mpImuPreintegratedFromLastKF;
 

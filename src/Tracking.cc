@@ -2123,12 +2123,12 @@ void Tracking::Track()
         {
             // 如果没有成功初始化，直接返回
             mLastFrame = Frame(mCurrentFrame);
-            cout << "Initialization Failed" <<'\n';
+            Verbose::PrintMess("Initialization Failed", Verbose::VERBOSITY_DEBUG);
             return;
         }
         else
         {
-            cout << "Initialization Failed OK" <<'\n';
+            Verbose::PrintMess("Initialization Successed", Verbose::VERBOSITY_DEBUG);
         }
 
         if(mpAtlas->GetAllMaps().size() == 1)
@@ -3498,6 +3498,19 @@ bool Tracking::TrackWithMotionModel()
 }
 
 /**
+ * @brief Track With Pure Wifi Rssi - add by tm
+ * Step 1：
+ * Step 2：
+ * Step 3：
+ * Step 4：
+ * @return return true if successed
+ */
+bool Tracking::TrackWithWiFi()
+{
+    return true;
+}
+
+/**
  * @brief 用局部地图进行跟踪，进一步优化位姿
  * 
  * 1. 更新局部地图，包括局部关键帧和关键点
@@ -4377,7 +4390,6 @@ void Tracking::UpdateLocalKeyFrames()
 bool Tracking::Relocalization()
 {
     Verbose::PrintMess("Starting relocalization", Verbose::VERBOSITY_NORMAL);
-    cout << "Starting relocalization"<<'\n';
     // Compute Bag of Words Vector
     // Step 1: 计算当前帧特征点的Bow映射
     mCurrentFrame.ComputeBoW();
@@ -4389,7 +4401,6 @@ bool Tracking::Relocalization()
 
     if(vpCandidateKFs.empty()) {
         Verbose::PrintMess("There are not candidates", Verbose::VERBOSITY_NORMAL);
-        cout << "There are not candidates"<<endl;
         return false;
     }
 

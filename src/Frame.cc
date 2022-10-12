@@ -1694,4 +1694,18 @@ Eigen::Vector3f Frame::UnprojectStereoFishEye(const int &i){
     return mRwc * mvStereo3Dpoints[i] + mOw;
 }
 
+/**
+ * tm add for wifi
+ * @return false if ap already exists 
+ */
+bool Frame::AddNewApObserved(const string bssid, const int rssi)
+{
+    if (!mApObserved.count(bssid))
+        return false;
+    else
+    {
+        mApObserved[bssid] = rssi;
+    }
+}
+
 } //namespace ORB_SLAM

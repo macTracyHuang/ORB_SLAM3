@@ -39,9 +39,11 @@
 #include "Viewer.h"
 #include "ImuTypes.h"
 #include "Settings.h"
+#include "Ap.h"
 
 #include "Config.h"
 #include "PointCloudMapping.h"
+#include "Fingerprint.h"
 
 namespace ORB_SLAM3
 {
@@ -82,6 +84,7 @@ class LocalMapping;
 class LoopClosing;
 class Settings;
 class PointCloudMapping;
+// class Ap;
 
 class System
 {
@@ -118,6 +121,9 @@ public:
     // Returns the camera pose (empty if tracking fails).
     Sophus::SE3f TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp, const vector<IMU::Point>& vImuMeas = vector<IMU::Point>(), string filename="");
 
+    // tm add for wifi
+    // Sophus::SE3f TrackRGBD_Wifi(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp, const vector<IMU::Point>& vImuMeas = vector<IMU::Point>(), string filename="", const Fingerprint &fingerprint = Fingerprint());
+    Sophus::SE3f TrackRGBD_Wifi(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp, const Fingerprint &fingerprint = Fingerprint(), const vector<IMU::Point>& vImuMeas = vector<IMU::Point>(), string filename="");
     // Proccess the given monocular frame and optionally imu data
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
     // Returns the camera pose (empty if tracking fails).
@@ -194,7 +200,11 @@ public:
 
     void SavePointcloudMap();
 
+    // tm - for wifi    
     int GetWifiMode();
+    std::vector<Ap*> GetAllAps();
+    void AddNewAp(Ap* const newAp);
+    Ap* GetApByBssid(string &bssid);
 
 #ifdef REGISTER_TIMES
     void InsertRectTime(double& time);
@@ -279,6 +289,10 @@ private:
     
     // tm - keep frame in reloc mode
     std::vector<Frame> mvBackupFrames;
+
+    // tm for wifi
+    std::mutex mMutexAllAps;
+    std::vector<Ap*> mAllAps;
 };
 
 }// namespace ORB_SLAM

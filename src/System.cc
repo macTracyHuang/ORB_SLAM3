@@ -32,6 +32,7 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
+// #include <wifi_scan/Fingerprint.h>
 
 namespace ORB_SLAM3
 {
@@ -393,7 +394,7 @@ Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const
         cerr << "ERROR: you called TrackRGBD but input sensor was not set to RGBD." << endl;
         exit(-1);
     }
-    cout << "start TrackRGBD"<<endl;
+    
     cv::Mat imToFeed = im.clone();
     cv::Mat imDepthToFeed = depthmap.clone();
     if(settings_ && settings_->needToResize()){
@@ -448,16 +449,29 @@ Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const
         for(size_t i_imu = 0; i_imu < vImuMeas.size(); i_imu++)
             mpTracker->GrabImuData(vImuMeas[i_imu]);
 
-    cout << "before  mpTracker->GrabImageRGBD" <<endl;
     Sophus::SE3f Tcw = mpTracker->GrabImageRGBD(imToFeed,imDepthToFeed,timestamp,filename);
 
     unique_lock<mutex> lock2(mMutexState);
-    cout << "damn it"<<endl;
     mTrackingState = mpTracker->mState;
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
-    cout << "successed"<<endl;
     return Tcw;
+}
+
+/**
+ * tm add for wifi
+ * 
+ * 
+ */
+Sophus::SE3f System::TrackRGBD_Wifi(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp, const Fingerprint &fingerprint, const vector<IMU::Point>& vImuMeas, string filename)
+{
+    // cout << "TrackRGBD_Wifi" << endl;
+    if (!fingerprint.mvAp.empty())
+        cout << fingerprint.mvAp[0]->GetBssid() << ": "<< fingerprint.mvRssi[0] << endl;
+    // else
+    //     cout << "no wifi" << endl;
+    
+    return this->TrackRGBD(im, depthmap, timestamp);
 }
 
 /**
@@ -1428,6 +1442,33 @@ vector<MapPoint*> System::GetTrackedMapPoints()
     unique_lock<mutex> lock(mMutexState);
     return mTrackedMapPoints;
 }
+
+// tm add for wifi
+vector<Ap*> System::GetAllAps()
+{
+    unique_lock<mutex> lock(mMutexAllAps);
+    return mAllAps;
+}
+
+void System::AddNewAp(Ap* const newAp)
+{
+    unique_lock<mutex> lock(mMutexAllAps);
+    mAllAps.push_back(newAp);
+}
+
+Ap* System::GetApByBssid(string &bssid)
+{
+    unique_lock<mutex> lock(mMutexAllAps);
+    for (auto ap:mAllAps)
+    {
+        if (ap->GetBssid() == bssid)
+            return ap;
+    }
+
+    Verbose::PrintMess("ap not exist in mAllAps", Verbose::VERBOSITY_DEBUG);
+    return nullptr;
+}
+// tm end add for wifi
 
 vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
 {

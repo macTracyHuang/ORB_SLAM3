@@ -9,7 +9,8 @@
 # Save point cloud: 0:false, 1:true
 # System.SavePointCloud: 1
 
-System.TurnWifi: 1
+
+System.TurnWifi: 0
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!
 #--------------------------------------------------------------------------------------------

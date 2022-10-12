@@ -36,11 +36,10 @@ def constructList(baglist, trajlist):
     # return res
         
 if __name__ == "__main__":
-    filename = "csiewrp.csv"
-
-    baglist = ['0906_wifi1.bag','0906_wifi2.bag','0906_wifi3.bag','0906_wifi4.bag']
-    trajlist = ['traj1.txt','traj2.txt','traj3.txt','traj4.txt']
+    baglist = ['1010.bag']
+    trajlist = ['traj1010.txt']
     constructList(baglist, trajlist)
+
     # output = constructList(baglist, trajlist)
 
     # output.to_csv(filename,index=False)
