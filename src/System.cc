@@ -466,12 +466,79 @@ Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const
 Sophus::SE3f System::TrackRGBD_Wifi(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp, const Fingerprint &fingerprint, const vector<IMU::Point>& vImuMeas, string filename)
 {
     // cout << "TrackRGBD_Wifi" << endl;
-    if (!fingerprint.mvAp.empty())
-        cout << fingerprint.mvAp[0]->GetBssid() << ": "<< fingerprint.mvRssi[0] << endl;
-    // else
-    //     cout << "no wifi" << endl;
+    if (fingerprint.mvAp.empty())
+        return this->TrackRGBD(im, depthmap, timestamp);
+        
+
+    cout << "TrackRGBD_Wifi: " << fingerprint.mvAp[0]->GetBssid() << ": "<< fingerprint.mvRssi[0] << endl;
+
+    if(mSensor!=RGBD  && mSensor!=IMU_RGBD)
+    {
+        cerr << "ERROR: you called TrackRGBD_Wifi but input sensor was not set to RGBD." << endl;
+        exit(-1);
+    }
     
-    return this->TrackRGBD(im, depthmap, timestamp);
+    cv::Mat imToFeed = im.clone();
+    cv::Mat imDepthToFeed = depthmap.clone();
+    if(settings_ && settings_->needToResize()){
+        cv::Mat resizedIm;
+        cv::resize(im,resizedIm,settings_->newImSize());
+        imToFeed = resizedIm;
+
+        cv::resize(depthmap,imDepthToFeed,settings_->newImSize());
+    }
+
+    // Check mode change
+    {
+        unique_lock<mutex> lock(mMutexMode);
+        if(mbActivateLocalizationMode)
+        {
+            mpLocalMapper->RequestStop();
+
+            // Wait until Local Mapping has effectively stopped
+            while(!mpLocalMapper->isStopped())
+            {
+                usleep(1000);
+            }
+
+            mpTracker->InformOnlyTracking(true);
+            mbActivateLocalizationMode = false;
+        }
+        if(mbDeactivateLocalizationMode)
+        {
+            mpTracker->InformOnlyTracking(false);
+            mpLocalMapper->Release();
+            mbDeactivateLocalizationMode = false;
+        }
+    }
+
+    // Check reset
+    {
+        unique_lock<mutex> lock(mMutexReset);
+        if(mbReset)
+        {
+            mpTracker->Reset();
+            mbReset = false;
+            mbResetActiveMap = false;
+        }
+        else if(mbResetActiveMap)
+        {
+            mpTracker->ResetActiveMap();
+            mbResetActiveMap = false;
+        }
+    }
+
+    if (mSensor == System::IMU_RGBD)
+        for(size_t i_imu = 0; i_imu < vImuMeas.size(); i_imu++)
+            mpTracker->GrabImuData(vImuMeas[i_imu]);
+
+    Sophus::SE3f Tcw = mpTracker->GrabImageRGBD_Wifi(imToFeed,imDepthToFeed,fingerprint,timestamp,filename);
+
+    unique_lock<mutex> lock2(mMutexState);
+    mTrackingState = mpTracker->mState;
+    mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
+    mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
+    return Tcw;
 }
 
 /**
@@ -1430,6 +1497,24 @@ void System::SaveDebugData(const int &initIdx)
     f.close();
 }
 
+void System::SaveAllAps(const string &filename)
+{
+
+    cout << endl << "Saving All Aps to " << filename << " ..." << endl;
+
+    ofstream f;
+    f.open(filename.c_str());
+    f << fixed;
+
+    auto aps = this->GetAllAps();
+
+    for (auto &ap: aps)
+    {
+        f << ap->GetBssid() << endl;
+    }
+
+    f.close();
+}
 
 int System::GetTrackingState()
 {

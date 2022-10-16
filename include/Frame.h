@@ -28,10 +28,12 @@
 #include "Thirdparty/Sophus/sophus/geometry.hpp"
 
 #include "ImuTypes.h"
+#include "Fingerprint.h"
 #include "ORBVocabulary.h"
 
 #include "Converter.h"
 #include "Settings.h"
+#include "Fingerprint.h"
 
 #include <mutex>
 #include <opencv2/opencv.hpp>
@@ -192,6 +194,10 @@ private:
     Eigen::Vector3f mVw;
     bool mbHasVelocity;
 
+    // tm add for wifi
+    Eigen::Vector3f mTest;
+    // Fingerprint mFingerprint;
+
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -304,9 +310,10 @@ public:
 
     int mnDataset;
 
+    
     // tm add for wifi
-    std::unordered_map<string, int> mApObserved;
-    bool AddNewApObserved(const string bssid, const int rssi);
+    
+    // void SetFingerprint(ORB_SLAM3::Fingerprint &fp);
     // tm end add for wifi
 #ifdef REGISTER_TIMES
     double mTimeORB_Ext;

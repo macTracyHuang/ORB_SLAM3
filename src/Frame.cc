@@ -1696,16 +1696,12 @@ Eigen::Vector3f Frame::UnprojectStereoFishEye(const int &i){
 
 /**
  * tm add for wifi
+ * TO DO : might need mutex when access fingerprint
  * @return false if ap already exists 
  */
-bool Frame::AddNewApObserved(const string bssid, const int rssi)
-{
-    if (!mApObserved.count(bssid))
-        return false;
-    else
-    {
-        mApObserved[bssid] = rssi;
-    }
-}
+// void Frame::SetFingerprint(ORB_SLAM3::Fingerprint &fp)
+// {
+//     mfingerprint = fp;
+// }
 
 } //namespace ORB_SLAM

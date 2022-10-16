@@ -104,7 +104,8 @@ int main(int argc, char **argv)
     SLAM.Shutdown();
 
     // Save camera trajectory
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
+    // SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
+    // SLAM.SaveAllAps("Bssid_List.txt");
     
     // SLAM.SavePointcloudMap();
 
@@ -237,6 +238,7 @@ ORB_SLAM3::Fingerprint WiFiGrabber::msgToFp(const wifi_scan::FingerprintConstPtr
 {
 
     ORB_SLAM3::Fingerprint fingerprint = ORB_SLAM3::Fingerprint();
+
 
     for (auto &addrssi: msgWifi->list)
     {

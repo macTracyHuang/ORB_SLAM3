@@ -205,6 +205,7 @@ public:
     std::vector<Ap*> GetAllAps();
     void AddNewAp(Ap* const newAp);
     Ap* GetApByBssid(string &bssid);
+    void SaveAllAps(const string &filename);
 
 #ifdef REGISTER_TIMES
     void InsertRectTime(double& time);
